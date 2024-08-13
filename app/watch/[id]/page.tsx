@@ -17,6 +17,9 @@ export default function Page({ params }: paramsProp) {
   const fetchEpisodeLinks = async () => {
     const url = `https://api-anim.vercel.app/anime/gogoanime/watch/${params.id}-episode-${episode}`;
     const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error("Failed to fetch episode links");
+    }
     return res.json();
   };
 
@@ -25,7 +28,8 @@ export default function Page({ params }: paramsProp) {
     queryFn: fetchEpisodeLinks,
   });
 
-  const litset = data?.sources[3]?.url as string;
+  // Safeguard to ensure sources exist and there's at least 4 elements in the array
+  const litset = data?.sources && data.sources.length > 3 ? data.sources[3]?.url : "";
 
   const videoJsOptions = {
     sources: [
@@ -49,7 +53,13 @@ export default function Page({ params }: paramsProp) {
   return (
     <main className="flex min-h-dvh flex-col items-center justify-between pb-24 pt-4">
       <h1>{`Episode ${episode}`}</h1>
-      {data && <div className="w-full"><VideoPlayer options={videoJsOptions} /></div>}
+      {error && <p>Error loading episode links.</p>}
+      {isLoading && <p>Loading...</p>}
+      {data && litset && (
+        <div className="w-full">
+          <VideoPlayer options={videoJsOptions} />
+        </div>
+      )}
 
       <div className="flex mt-4 space-x-4">
         {episode > 1 && (
