@@ -14,10 +14,11 @@ import { Button } from "../ui/button";
 interface AnimeCardProps {
   title: string;
   image: string;
-  duration: string;
+  duration?: string;
   episode: number;
   type: string;
-  id: string
+  id: string,
+  mailId?:string
 }
 export default function AnimeCard({
   title,
@@ -25,7 +26,8 @@ export default function AnimeCard({
   duration,
   episode,
   type,
-  id
+  id,
+  mailId
 }: AnimeCardProps) {
   return (
     <Card className="w-[300px] h-auto">
@@ -37,7 +39,7 @@ export default function AnimeCard({
             width={1000}
             height={1000}
             src={image}
-            alt={title}
+            alt={`image of ${title}`}
           />
         </div>
       </CardHeader>
@@ -54,8 +56,8 @@ export default function AnimeCard({
             </Badge>
           </div>
           <div>
-            <h2>{duration}</h2>
-            <Link href={`/anime/watch/${id}`}>
+            {duration && <h2>{duration}</h2>}
+            <Link href={`/anime/${id}?ep=${mailId}`}>
               <Button>Watch</Button>
             </Link>
           </div>

@@ -26,7 +26,7 @@ export default function RootLayout({
         )}
       >
         <Providers>
-          <main>{children}</main>
+          <main className="min-h-dvh pb-24">{children}</main>
           <Navbar />
         </Providers>
       </body>

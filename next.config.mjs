@@ -12,6 +12,11 @@ const nextConfig = {
         hostname: "cdn.noitatnemucod.net",
         pathname: "**",
       },
+      {
+        protocol: "https",
+        hostname: "s4.anilist.co",
+        pathname: "**",
+      },
     ],
   },
 };
