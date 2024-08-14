@@ -15,7 +15,10 @@ export default function Hero() {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["recent-anime"],
-    queryFn: fetchRecentAnime,
+    queryFn: async () =>{
+      const animeData = await fetchRecentAnime()
+      return animeData
+    },
   });
 
   if (isLoading) {

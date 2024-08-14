@@ -3,6 +3,7 @@
 import AnimeCard from "@/components/shared/AnimeCard";
 import VideoPlayer from "@/components/shared/VideoPlayer";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { removeNumberFromString } from "@/lib/utility";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
@@ -143,19 +144,19 @@ export default function Page({ params }: paramsProp) {
 
               <div className="flex mt-4 space-x-4">
                 {episode > 1 && (
-                  <button
+                  <Button
                     onClick={handlePreviousEpisode}
                     className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700"
                   >
                     Previous Episode
-                  </button>
+                  </Button>
                 )}
-                <button
+                <Button
                   onClick={handleNextEpisode}
                   className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
                 >
                   Next Episode
-                </button>
+                </Button>
               </div>
             </div>
           </div>

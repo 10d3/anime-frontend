@@ -11,7 +11,14 @@ import {
   PencilIcon,
   Search,
 } from "lucide-react";
-
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -23,9 +30,15 @@ import {
 } from "@/components/ui/tooltip";
 import { Dock, DockIcon } from "@/components/magicui/dock";
 import { ModeToggle } from "../shared/toggle-mode";
+import { AnimeSearchBar } from "../shared/AnimeSearchBar";
 
 export type IconProps = React.HTMLAttributes<SVGElement>;
 
+const searchData = {
+  name: "Search",
+  url: "#",
+  icon: Search,
+};
 const DATA = {
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
@@ -39,11 +52,11 @@ const DATA = {
         url: "/bookmark",
         icon: Bookmark,
       },
-      Search: {
-        name: "Search",
-        url: "#",
-        icon: Search,
-      },
+      // Search: {
+      //   name: "Search",
+      //   url: "#",
+      //   icon: Search,
+      // },
       LogIn: {
         name: "SignIn",
         url: "#",
@@ -85,6 +98,28 @@ export default function Navbar() {
             </DockIcon>
           ))}
           <Separator orientation="vertical" className="h-full" />
+          <DockIcon>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Dialog>
+                  <DialogTrigger>
+                    <searchData.icon className="size-4" />
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Search Bar</DialogTitle>
+                      <DialogDescription>
+                        <AnimeSearchBar />
+                      </DialogDescription>
+                    </DialogHeader>
+                  </DialogContent>
+                </Dialog>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{searchData.name}</p>
+              </TooltipContent>
+            </Tooltip>
+          </DockIcon>
           {Object.entries(DATA.contact.social).map(([name, social]) => (
             <DockIcon key={name}>
               <Tooltip>
