@@ -31,6 +31,7 @@ import {
 import { Dock, DockIcon } from "@/components/magicui/dock";
 import { ModeToggle } from "../shared/toggle-mode";
 import { AnimeSearchBar } from "../shared/AnimeSearchBar";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 export type IconProps = React.HTMLAttributes<SVGElement>;
 
@@ -101,19 +102,14 @@ export default function Navbar() {
           <DockIcon>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Dialog>
-                  <DialogTrigger>
+                <Popover>
+                  <PopoverTrigger>
                     <searchData.icon className="size-4" />
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Search Bar</DialogTitle>
-                      <DialogDescription>
+                  </PopoverTrigger>
+                  <PopoverContent>
                         <AnimeSearchBar />
-                      </DialogDescription>
-                    </DialogHeader>
-                  </DialogContent>
-                </Dialog>
+                  </PopoverContent>
+                </Popover>
               </TooltipTrigger>
               <TooltipContent>
                 <p>{searchData.name}</p>
