@@ -15,9 +15,9 @@ export default function Hero() {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["recent-anime"],
-    queryFn: async () =>{
-      const animeData = await fetchRecentAnime()
-      return animeData
+    queryFn: async () => {
+      const animeData = await fetchRecentAnime();
+      return animeData;
     },
   });
 
@@ -40,23 +40,27 @@ export default function Hero() {
   return (
     <section>
       <Carousel autoSlide autoSlideInterval={3000}>
-        {data?.results.map((s: any) => (
-          <div key={s.id} className="relative min-w-full cursor-pointer">
-            <Image
-              className="min-w-full object-cover object-center contain-content h-[250px] opacity-60"
-              priority
-              src={s.image}
-              height={1000}
-              width={1000}
-              alt={`image of ${s.title}`}
-            />
-            <div className="absolute bottom-12 left-6 z-20 bg-transparent">
-              <Link href={`/watch/${s.id}`}>
-                <h1 className="text-2xl">{s.title}</h1>
-              </Link>
+        {data?.results?.length > 0 ? (
+          data.results.map((s: any) => (
+            <div key={s.id} className="relative min-w-full cursor-pointer">
+              <Image
+                className="min-w-full object-cover object-center contain-content h-[250px] opacity-60"
+                priority
+                src={s.image}
+                height={1000}
+                width={1000}
+                alt={`image of ${s.title}`}
+              />
+              <div className="absolute bottom-12 left-6 z-20 bg-transparent">
+                <Link href={`/watch/${s.id}`}>
+                  <h1 className="text-2xl">{s.title}</h1>
+                </Link>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <div>No slides available</div>
+        )}
       </Carousel>
     </section>
   );

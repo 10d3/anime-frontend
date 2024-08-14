@@ -1,145 +1,46 @@
-"use client";
-
-import AnimeCard from "@/components/shared/AnimeCard";
-import { AnimeEp } from "@/components/shared/AnimeEp";
-import { AnimePres } from "@/components/shared/AnimePres";
-import VideoPlayer from "@/components/shared/VideoPlayer";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import useFetchAllEpisodesLinks from "@/hook/useFetch";
-import { removeNumberFromString } from "@/lib/utility";
-import { useQuery } from "@tanstack/react-query";
-import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
-import React, { useState, useEffect } from "react";
+import AnimeStarter from "@/components/shared/AnimeStarter";
+import { useSearchParams } from "next/navigation";
+import React from "react";
 
 interface paramsProp {
   params: {
     id: string;
     ep: number;
   };
-}
-
-interface AnimeData {
-  image: string;
-  title: string;
-  type: string;
-  id: string;
-}
-
-interface EpisodeLinks {
-  sources: { url: string }[];
-}
-
-export default function Page({ params }: paramsProp) {
-  const [episode, setEpisode] = useState(1);
-
-  const handleNextEpisode = () => {
-    setEpisode((prevEpisode) => prevEpisode + 1);
+  searchParams: {
+    ep: number;
   };
+}
 
-  const handlePreviousEpisode = () => {
-    if (episode > 1) {
-      setEpisode((prevEpisode) => prevEpisode - 1);
-    }
+function formatAnimeTitle(title:string) {
+  // Supprimer les parties non désirées (ici, "tv-534")
+  const cleanedTitle = title.replace(/-tv-\d+$/, "");
+
+  // Remplacer les tirets par des espaces
+  const words = cleanedTitle.split("-");
+
+  // Mettre en majuscule la première lettre de chaque mot
+  const capitalizedWords = words.map(
+    (word) => word.charAt(0).toUpperCase() + word.slice(1)
+  );
+
+  // Joindre les mots avec des espaces
+  const formattedTitle = capitalizedWords.join(" ");
+
+  return formattedTitle;
+}
+export async function generateMetadata({ params }: paramsProp) {
+  return {
+    title: formatAnimeTitle(params.id),
   };
+}
 
-  const searchParams = useSearchParams();
-  const episodes = searchParams.get("ep");
+export default function Page({ params, searchParams }: paramsProp) {
   const test = params.id.toLocaleLowerCase();
-
-  const fetchRecentAnime = async () => {
-    const url = `https://api-anim.vercel.app/anime/zoro/info?id=${test}`;
-    const res = await fetch(url);
-    return res.json();
-  };
-
-  const { data, isLoading, error, isFetching } = useQuery({
-    queryKey: ["recent-anime"],
-    queryFn: async () => {
-      const animeData = await fetchRecentAnime();
-      return animeData;
-    },
-  });
-
-  console.log(data);
-
-  // const fetchEpisodeLinks = async () => {
-  //   const test2 = removeNumberFromString(data?.id || "");
-  //   let url;
-  //   if(data.type !== 'TV'){
-  //      url = `https://api-anim.vercel.app/anime/gogoanime/watch/${test2}`
-  //   }else{
-  //      url = `https://api-anim.vercel.app/anime/gogoanime/watch/${test2}-episode-${episode}`;
-  //   }
-  //   const res = await fetch(url);
-  //   if (!res.ok) {
-  //     throw new Error("Failed to fetch episode links");
-  //   }
-  //   return res.json();
-  // };
-
-  // const { data : link, isLoading : loader, error: failed } = useQuery({
-  //   queryKey: ["episode-links", episode],
-  //   queryFn: async () =>{
-  //     const animeData = await fetchEpisodeLinks()
-  //     return animeData
-  //   },
-  // });
-
-  const id = data?.id;
-  const type = data?.type;
-  const episodeCount = Number(episodes);
-  console.log(id);
-  console.log(type);
-  console.log(episodeCount);
-  const {
-    data: link,
-    isLoading: loader,
-    error: failed,
-  } = useFetchAllEpisodesLinks({ episodeCount, id, type });
-  console.log(link);
-
-  if (!data)
-    return (
-      <section className="bg-muted rounded-lg overflow-hidden shadow-lg w-full">
-        <Skeleton className="min-w-full h-20" />
-        <div className="space-y-2">
-          <Skeleton className="h-[70px] w-full" />
-          <Skeleton className="h-[70px] w-full" />
-        </div>
-      </section>
-    );
-
+  console.log(params.id);
   return (
-    <section className="flex min-h-dvh flex-col items-center justify-between">
-      {data && (
-        <div className="flex flex-col gap-4 w-full">
-          <AnimePres
-            title={data.title}
-            image={data.image}
-            description={data.description ? data.description : null}
-          />
-          <div className="flex flex-col">
-            {loader && (
-              <section className="flex flex-col min-w-full gap-2 pt-2">
-                <Skeleton className="min-w-full h-20" />
-                <div className="space-y-2">
-                  <Skeleton className="h-[70px] w-full" />
-                  <Skeleton className="h-[70px] w-full" />
-                </div>
-              </section>
-            )}
-            {failed && <div>Something went wrong</div>}
-            {link?.length && (
-              <div>
-                <AnimeEp link={link} />
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </section>
+    <div>
+      <AnimeStarter params={params} searchParams={searchParams} />
+    </div>
   );
 }
