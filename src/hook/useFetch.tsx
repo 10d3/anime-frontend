@@ -11,8 +11,7 @@ interface TestProp {
 const fetchEpisodeLinks = async ({ episodeCount, id, type }: TestProp) => {
   const baseId = removeNumberFromString(id || "");
   const allEpisodesLinks = [];
-
-  if (type !== "TV") {
+  if (type == "Movie") {
     // Fetch only once for non-TV types (e.g., movies)
     const url = `https://api-anim.vercel.app/anime/gogoanime/watch/${baseId}`;
     const res = await fetch(url);
@@ -30,7 +29,9 @@ const fetchEpisodeLinks = async ({ episodeCount, id, type }: TestProp) => {
         fetch(url)
           .then((res) => {
             if (!res.ok) {
-              throw new Error(`Failed to fetch episode links for episode ${episode}`);
+              throw new Error(
+                `Failed to fetch episode links for episode ${episode}`
+              );
             }
             return res.json();
           })

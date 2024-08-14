@@ -62,7 +62,6 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
   const id = data?.id;
   const type = data?.type;
   const episodeCount = Number(episodes);
-  console.log(id);
   console.log(type);
   console.log(episodeCount);
   const {

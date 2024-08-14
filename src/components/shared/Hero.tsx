@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Carousel from "./Caroussel";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
@@ -7,8 +7,10 @@ import Link from "next/link";
 import { Skeleton } from "../ui/skeleton";
 
 export default function Hero() {
+  const [animeData, setAnimeData] = useState<any>(null);
+
   const fetchRecentAnime = async () => {
-    const url = "https://api-anim.vercel.app/anime/gogoanime/top-airing";
+    const url = "https://api-anim.vercel.app/anime/zoro/top-airing";
     const res = await fetch(url);
     return res.json();
   };
@@ -16,8 +18,9 @@ export default function Hero() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["recent-anime"],
     queryFn: async () => {
-      const animeData = await fetchRecentAnime();
-      return animeData;
+      const fetchedData = await fetchRecentAnime();
+      setAnimeData(fetchedData);
+      return fetchedData;
     },
   });
 
@@ -40,8 +43,8 @@ export default function Hero() {
   return (
     <section>
       <Carousel autoSlide autoSlideInterval={3000}>
-        {data?.results?.length > 0 ? (
-          data.results.map((s: any) => (
+        {Array.isArray(animeData?.results) && animeData.results.length > 0 ? (
+          animeData.results.map((s: any) => (
             <div key={s.id} className="relative min-w-full cursor-pointer">
               <Image
                 className="min-w-full object-cover object-center contain-content h-[250px] opacity-60"
@@ -52,7 +55,7 @@ export default function Hero() {
                 alt={`image of ${s.title}`}
               />
               <div className="absolute bottom-12 left-6 z-20 bg-transparent">
-                <Link href={`/watch/${s.id}`}>
+                <Link href={`/anime/${s.id}?ep=${s.episodes}`}>
                   <h1 className="text-2xl">{s.title}</h1>
                 </Link>
               </div>
