@@ -1,9 +1,13 @@
-'use client';
+"use client";
 
 import AnimeCard from "@/components/shared/AnimeCard";
+import { AnimeEp } from "@/components/shared/AnimeEp";
+import { AnimePres } from "@/components/shared/AnimePres";
 import VideoPlayer from "@/components/shared/VideoPlayer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import useFetchAllEpisodesLinks from "@/hook/useFetch";
 import { removeNumberFromString } from "@/lib/utility";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
@@ -30,8 +34,6 @@ interface EpisodeLinks {
 
 export default function Page({ params }: paramsProp) {
   const [episode, setEpisode] = useState(1);
-  const [animeInfo, setAnimeInfo] = useState<AnimeData | null>(null);
-  const [episodeLink, setEpisodeLink] = useState<EpisodeLinks | null>(null);
 
   const handleNextEpisode = () => {
     setEpisode((prevEpisode) => prevEpisode + 1);
@@ -53,112 +55,88 @@ export default function Page({ params }: paramsProp) {
     return res.json();
   };
 
-  const fetchEpisodeLinks = async () => {
-    const test2 = removeNumberFromString(animeInfo?.id || "");
-    const url = `https://api-anim.vercel.app/anime/gogoanime/watch/${test2}-episode-${episode}`;
-    const res = await fetch(url);
-    if (!res.ok) {
-      throw new Error("Failed to fetch episode links");
-    }
-    return res.json();
-  };
+  const { data, isLoading, error, isFetching } = useQuery({
+    queryKey: ["recent-anime"],
+    queryFn: async () => {
+      const animeData = await fetchRecentAnime();
+      return animeData;
+    },
+  });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const recentAnimeData = await fetchRecentAnime();
-        setAnimeInfo(recentAnimeData);
-      } catch (error) {
-        console.error("Error fetching anime info:", error);
-      }
-    };
+  console.log(data);
 
-    fetchData();
-  }, []);
+  // const fetchEpisodeLinks = async () => {
+  //   const test2 = removeNumberFromString(data?.id || "");
+  //   let url;
+  //   if(data.type !== 'TV'){
+  //      url = `https://api-anim.vercel.app/anime/gogoanime/watch/${test2}`
+  //   }else{
+  //      url = `https://api-anim.vercel.app/anime/gogoanime/watch/${test2}-episode-${episode}`;
+  //   }
+  //   const res = await fetch(url);
+  //   if (!res.ok) {
+  //     throw new Error("Failed to fetch episode links");
+  //   }
+  //   return res.json();
+  // };
 
-  useEffect(() => {
-    if (animeInfo) {
-      const fetchData = async () => {
-        try {
-          const episodeLinksData = await fetchEpisodeLinks();
-          setEpisodeLink(episodeLinksData);
-        } catch (error) {
-          console.error("Error fetching episode links:", error);
-        }
-      };
+  // const { data : link, isLoading : loader, error: failed } = useQuery({
+  //   queryKey: ["episode-links", episode],
+  //   queryFn: async () =>{
+  //     const animeData = await fetchEpisodeLinks()
+  //     return animeData
+  //   },
+  // });
 
-      fetchData();
-    }
-  }, [animeInfo, episode]);
+  const id = data?.id;
+  const type = data?.type;
+  const episodeCount = Number(episodes);
+  console.log(id);
+  console.log(type);
+  console.log(episodeCount);
+  const {
+    data: link,
+    isLoading: loader,
+    error: failed,
+  } = useFetchAllEpisodesLinks({ episodeCount, id, type });
+  console.log(link);
 
-  if (!animeInfo || !episodeLink) return <div>Loading...</div>;
-
-  const litset =
-    episodeLink.sources && episodeLink.sources.length > 3
-      ? episodeLink.sources[3]?.url
-      : "";
-
-  const videoJsOptions = {
-    sources: [
-      {
-        src: litset,
-        type: "application/x-mpegURL",
-      },
-    ],
-  };
+  if (!data)
+    return (
+      <section className="bg-muted rounded-lg overflow-hidden shadow-lg w-full">
+        <Skeleton className="min-w-full h-20" />
+        <div className="space-y-2">
+          <Skeleton className="h-[70px] w-full" />
+          <Skeleton className="h-[70px] w-full" />
+        </div>
+      </section>
+    );
 
   return (
     <section className="flex min-h-dvh flex-col items-center justify-between">
-      {animeInfo && (
+      {data && (
         <div className="flex flex-col gap-4 w-full">
-          <div className="relative w-sdv h-[300px]">
-            {animeInfo.image && (
-              <Image
-                className="w-full h-full"
-                src={animeInfo.image}
-                alt="image"
-                width={1000}
-                height={1000}
-                quality={100}
-                objectFit="contain"
-              />
-            )}
-          </div>
+          <AnimePres
+            title={data.title}
+            image={data.image}
+            description={data.description ? data.description : null}
+          />
           <div className="flex flex-col">
-            <div>
-              <h2>{animeInfo.title}</h2>
-              <div className="flex flex-row justify-between">
-                <Badge>{episodes} episodes</Badge>
-                <Badge>{animeInfo.type}</Badge>
-              </div>
-            </div>
-            <div></div>
-            <div>
-              {/* {episodeLink.error && <p>Error loading episode links.</p>}
-              {episodeLink.isLoading && <p>Loading...</p>} */}
-              {animeInfo && litset && (
-                <div className="w-full">
-                  <VideoPlayer key={litset} options={videoJsOptions} />
+            {loader && (
+              <section className="flex flex-col min-w-full gap-2 pt-2">
+                <Skeleton className="min-w-full h-20" />
+                <div className="space-y-2">
+                  <Skeleton className="h-[70px] w-full" />
+                  <Skeleton className="h-[70px] w-full" />
                 </div>
-              )}
-
-              <div className="flex mt-4 space-x-4">
-                {episode > 1 && (
-                  <Button
-                    onClick={handlePreviousEpisode}
-                    className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700"
-                  >
-                    Previous Episode
-                  </Button>
-                )}
-                <Button
-                  onClick={handleNextEpisode}
-                  className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
-                >
-                  Next Episode
-                </Button>
+              </section>
+            )}
+            {failed && <div>Something went wrong</div>}
+            {link?.length && (
+              <div>
+                <AnimeEp link={link} />
               </div>
-            </div>
+            )}
           </div>
         </div>
       )}
