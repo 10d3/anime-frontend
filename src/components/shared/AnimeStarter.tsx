@@ -15,14 +15,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState, useEffect } from "react";
 
 interface paramsProp {
-    params: {
-      id: string;
-      ep: number;
-    };
-    searchParams:{
-      ep:number
-    }
-  }
+  params: {
+    id: string;
+    ep: number;
+  };
+  searchParams: {
+    ep: number;
+  };
+}
 
 interface AnimeData {
   image: string;
@@ -35,16 +35,15 @@ interface EpisodeLinks {
   sources: { url: string }[];
 }
 
-
 export default function AnimeStarter({ params, searchParams }: paramsProp) {
   const [episode, setEpisode] = useState(1);
 
-//   const searchParams = useSearchParams();
-  const episodes = Number(searchParams.ep)
+  //   const searchParams = useSearchParams();
+  // const episodes = Number(searchParams.ep)
   const test = params.id.toLocaleLowerCase();
 
   const fetchRecentAnime = async () => {
-    const url = `https://api-anim.vercel.app/anime/zoro/info?id=${test}`;
+    const url = `https://api-anim.vercel.app/meta/mal/info/${params.id}`;
     const res = await fetch(url);
     return res.json();
   };
@@ -59,17 +58,19 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
 
   console.log(data);
 
-  const id = data?.id;
+  const id = data?.episodes;
   const type = data?.type;
-  const episodeCount = Number(episodes);
-  console.log(type);
-  console.log(episodeCount);
+  const episodes = data?.episodes;
+  console.log(episodes);
+  // console.log(episodeCount);
   const {
     data: link,
     isLoading: loader,
     error: failed,
-  } = useFetchAllEpisodesLinks({ episodeCount, id, type });
-  console.log(link);
+  } = useFetchAllEpisodesLinks({ episodes });
+  console.log(loader)
+  console.log(failed)
+  console.log(link)
 
   if (!data)
     return (
@@ -87,12 +88,12 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
       {data && (
         <div className="flex flex-col gap-4 w-full">
           <AnimePres
-            title={data.title}
+            title={data.title.english}
             image={data.image}
             description={data.description ? data.description : null}
           />
           <div className="flex flex-col">
-            {loader && (
+            {isLoading && (
               <section className="flex flex-col min-w-full gap-2 pt-2">
                 <Skeleton className="min-w-full h-20" />
                 <div className="space-y-2">
@@ -101,7 +102,7 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
                 </div>
               </section>
             )}
-            {failed && <div>Something went wrong</div>}
+            {error && <div>Something went wrong</div>}
             {link?.length && (
               <div>
                 <AnimeEp link={link} />

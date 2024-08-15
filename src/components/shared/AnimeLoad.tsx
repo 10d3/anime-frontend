@@ -27,7 +27,7 @@ export default async function AnimeLoad({
     .join(" & ");
 
   const fetchRecentAnime = async () => {
-    const url = `https://api-anim.vercel.app/anime/zoro/${q}?page=${page}`;
+    const url = `https://api-anim.vercel.app/meta/mal/${q}`;
     const res = await fetch(url);
     return res.json();
   };

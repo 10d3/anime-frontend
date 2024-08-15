@@ -10,7 +10,7 @@ export default function Hero() {
   const [animeData, setAnimeData] = useState<any>(null);
 
   const fetchRecentAnime = async () => {
-    const url = "https://api-anim.vercel.app/anime/zoro/top-airing";
+    const url = "https://api-anim.vercel.app/meta/mal/recent-episodes";
     const res = await fetch(url);
     return res.json();
   };
@@ -55,7 +55,7 @@ export default function Hero() {
                 alt={`image of ${s.title}`}
               />
               <div className="absolute bottom-12 left-6 z-20 bg-transparent">
-                <Link href={`/anime/${s.id}?ep=${s.episodes}`}>
+                <Link href={`/anime/${s.id}`}>
                   <h1 className="text-2xl">{s.title}</h1>
                 </Link>
               </div>

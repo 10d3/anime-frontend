@@ -18,6 +18,7 @@ interface EpisodeLinks {
 }
 
 export const AnimeEp = (link: any) => {
+  console.log(link)
   return (
     <section className="w-full py-12 md:py-24 lg:py-32">
       <div className="container mx-auto px-4 md:px-6 grid gap-12">
@@ -25,9 +26,9 @@ export const AnimeEp = (link: any) => {
           <h2 className="text-3xl font-bold mb-6">Episodes</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {link.link?.length &&
-              link.link.map((links: EpisodeLinks) => {
+              link.link.map((links: any) => {
                 const videoJsOptions = {
-                  sources: links.sources.map((source: Source) => ({
+                  sources: links.videoSources.map((source: Source) => ({
                     src: source.url,
                     type: source.isM3U8
                       ? "application/x-mpegURL"
@@ -50,9 +51,9 @@ export const AnimeEp = (link: any) => {
                     </div>
                     <div className="p-4">
                       <div className="font-medium">{`Episode ${links.episode}`}</div>
-                      {/* <div className="text-sm text-muted-foreground">
-                        The Elric Brothers
-                      </div> */}
+                      <div className="text-sm text-muted-foreground">
+                        {link.link.id}
+                      </div>
                     </div>
                   </div>
                 );

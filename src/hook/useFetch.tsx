@@ -1,60 +1,71 @@
 "use client";
-import { removeNumberFromString } from "@/lib/utility";
 import { useQuery } from "@tanstack/react-query";
 
-interface TestProp {
-  episodeCount: number;
+interface Episode {
   id: string;
-  type: string;
+  title: string;
+  image: string;
+  number: number;
+  description: string | null;
+  url: string;
 }
 
-const fetchEpisodeLinks = async ({ episodeCount, id, type }: TestProp) => {
-  const baseId = removeNumberFromString(id || "");
-  const allEpisodesLinks = [];
-  if (type == "Movie") {
-    // Fetch only once for non-TV types (e.g., movies)
-    const url = `https://api-anim.vercel.app/anime/gogoanime/watch/${baseId}`;
-    const res = await fetch(url);
-    if (!res.ok) {
-      throw new Error("Failed to fetch movie links");
-    }
-    const movieData = await res.json();
-    allEpisodesLinks.push(movieData);
-  } else {
-    // Fetch for each episode if type is TV
-    const episodePromises = [];
-    for (let episode = 1; episode <= episodeCount; episode++) {
-      const url = `https://api-anim.vercel.app/anime/gogoanime/watch/${baseId}-episode-${episode}`;
-      episodePromises.push(
-        fetch(url)
-          .then((res) => {
-            if (!res.ok) {
-              throw new Error(
-                `Failed to fetch episode links for episode ${episode}`
-              );
-            }
-            return res.json();
-          })
-          .then((episodeData) => ({
-            episode,
-            ...episodeData,
-          }))
-      );
-    }
+interface FetchEpisodesProp {
+  episodes: Episode[];
+}
 
-    // Wait for all episodes to be fetched
-    const episodesData = await Promise.all(episodePromises);
-    allEpisodesLinks.push(...episodesData);
+interface Source {
+  url: string;
+  isM3U8: boolean;
+  quality: string;
+}
+
+interface EpisodeData {
+  headers: {
+    Referer: string;
+  };
+  sources: Source[];
+  download: string;
+}
+
+const fetchAllEpisodesLinks = async ({ episodes }: FetchEpisodesProp) => {
+  try {
+    const allEpisodesLinks = await Promise.all(
+      episodes.map(async (episode) => {
+        const url = `https://api-anim.vercel.app/meta/mal/watch/${episode.id}`;
+        console.log("Fetching URL:", url);
+
+        const res = await fetch(url);
+        if (!res.ok) {
+          throw new Error(`Failed to fetch episode links for ${episode.id}`);
+        }
+
+        const episodeData = await res.json();
+        console.log("Fetched Data:", episodeData); // Log the fetched data
+
+        return {
+          ...episode,
+          videoSources: episodeData.sources,
+          downloadLink: episodeData.download,
+          referer: episodeData.headers.Referer,
+        };
+      })
+    );
+
+    console.log("All Episodes Links:", allEpisodesLinks); // Log the final data
+    return allEpisodesLinks;
+  } catch (error) {
+    console.error("Error in fetchAllEpisodesLinks:", error);
+    throw error;
   }
-
-  return allEpisodesLinks;
 };
 
-const useFetchAllEpisodesLinks = ({ episodeCount, id, type }: TestProp) => {
+
+const useFetchAllEpisodesLinks = ({ episodes }: FetchEpisodesProp) => {
   return useQuery({
-    queryKey: ["episode-links", episodeCount],
-    queryFn: () => fetchEpisodeLinks({ episodeCount, id, type }),
-    enabled: !!id && !!type && !!episodeCount, // Ensure the query only runs when these parameters are available
+    queryKey: ["episode-links", episodes],
+    queryFn: () => fetchAllEpisodesLinks({ episodes }),
+    enabled: !!episodes, // Ensure the query only runs when episodes are available
   });
 };
 
