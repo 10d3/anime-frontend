@@ -72,7 +72,7 @@ export default async function AnimeLoad({
           {data?.results.map((s: any) => (
             <AnimeCard
               key={s.id}
-              title={s.title.english}
+              title={s.title}
             //   duration={s.duration}
               episode={s.totalEpisodes}
               id={s.id}

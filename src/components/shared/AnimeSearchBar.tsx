@@ -19,6 +19,7 @@ export const AnimeSearchBar = () => {
     const url = `/anime?q=${encodeURIComponent(searchParams.toString())}`;
     // redirect(`anime/?${searchParams.toString()}`);
     redirect(url)
+    
   }
   return (
     <div>

@@ -17,8 +17,8 @@ interface AnimeCardProps {
   duration?: string;
   episode: number;
   type: string;
-  id: string,
-  mailId?:string
+  id: string;
+  mailId?: string;
 }
 export default function AnimeCard({
   title,
@@ -27,7 +27,7 @@ export default function AnimeCard({
   episode,
   type,
   id,
-  mailId
+  mailId,
 }: AnimeCardProps) {
   return (
     <Card className="w-[300px] h-auto">
@@ -51,13 +51,15 @@ export default function AnimeCard({
         <div className=" mt-1 mb-1 flex flex-col gap-2">
           <div className="flex justify-between">
             <h2 className="line-clamp-1 text-[0.8rem] ">{episode}</h2>
-            <Badge className=" bg-destructive">
-              <h2>{type}</h2>
-            </Badge>
+            {type && (
+              <Badge className=" bg-destructive">
+                <h2>{type}</h2>
+              </Badge>
+            )}
           </div>
           <div>
             {duration && <h2>{duration}</h2>}
-            <Link href={`/anime/${id}?ep=${mailId}`}>
+            <Link href={`/anime/${id}`}>
               <Button>Watch</Button>
             </Link>
           </div>
