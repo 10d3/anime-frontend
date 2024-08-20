@@ -13,15 +13,23 @@ interface IVideoPlayerProps {
   options: PlayerOptions;
 }
 
-const initialOptions: PlayerOptions = {
+const initialOptions = {
   controls: true,
   fluid: true,
   controlBar: {
+    children: [
+      'playToggle', // Play/Pause button
+      'volumePanel', // Volume control
+      'progressControl', // Progress bar
+      'remainingTimeDisplay', // Remaining time
+      'fullscreenToggle' // Fullscreen button
+    ],
     volumePanel: {
-      inline: false,
+      inline: false, // Volume control as a dropdown
     },
   },
 };
+
 
 const VideoPlayer: React.FC<IVideoPlayerProps> = ({ options }) => {
   const videoNode = React.useRef<HTMLVideoElement>(null);
