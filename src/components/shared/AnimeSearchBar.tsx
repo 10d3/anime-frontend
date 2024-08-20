@@ -10,23 +10,20 @@ export const AnimeSearchBar = () => {
 
     const values = Object.fromEntries(formData.entries());
     const { q } = animeSearchSchema.parse(values);
-    const searchParams = new URLSearchParams({
-      ...(q && { q: q.trim() }),
-      //   ...(eventtype && { eventtype: eventtype }),
-      //   ...(location && { location: location }),
-    });
 
-    const url = `/anime?q=${encodeURIComponent(searchParams.toString())}`;
-    // redirect(`anime/?${searchParams.toString()}`);
-    redirect(url)
-    // reset()
+    // Encode the query parameter directly
+    const query = q ? encodeURIComponent(q.trim()) : "";
+    const url = `/anime?q=${query}`;
+
+    // Perform the redirect
+    redirect(url);
   }
+
   return (
     <div>
       <form action={searchAnime}>
         <div className="flex flex-col gap-3">
           <div className="flex">
-            {/* <Label htmlFor='q'>Search</Label> */}
             <Input
               className=""
               id="q"
@@ -34,7 +31,9 @@ export const AnimeSearchBar = () => {
               placeholder="Search event"
             />
           </div>
-          <Button className=" bg-primary" type="submit">Search Anime</Button>
+          <Button className="bg-primary" type="submit">
+            Search Anime
+          </Button>
         </div>
       </form>
     </div>
