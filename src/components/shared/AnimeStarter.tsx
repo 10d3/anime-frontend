@@ -11,7 +11,6 @@ import useFetchAllEpisodesLinks from "@/hook/useFetch";
 import { removeNumberFromString } from "@/lib/utility";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState, useEffect } from "react";
 
 interface paramsProp {
@@ -43,7 +42,7 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
   const test = params.id.toLocaleLowerCase();
 
   const fetchRecentAnime = async () => {
-    const url = `https://api-anim.vercel.app/meta/mal/info/${params.id}`;
+    const url = `https://animetize-api.vercel.app/info/${params.id}`;
     const res = await fetch(url);
     return res.json();
   };
@@ -88,7 +87,7 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
       {data && (
         <div className="flex flex-col gap-4 w-full">
           <AnimePres
-            title={data.title.english}
+            title={data.title}
             image={data.image}
             description={data.description ? data.description : null}
           />

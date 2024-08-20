@@ -10,7 +10,7 @@ export default function Hero() {
   const [animeData, setAnimeData] = useState<any>(null);
 
   const fetchRecentAnime = async () => {
-    const url = "https://api-anim.vercel.app/meta/mal/recent-episodes";
+    const url = "https://animetize-api.vercel.app/recent-episodes";
     const res = await fetch(url);
     return res.json();
   };

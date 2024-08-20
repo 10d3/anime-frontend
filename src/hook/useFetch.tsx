@@ -32,7 +32,7 @@ const fetchAllEpisodesLinks = async ({ episodes }: FetchEpisodesProp) => {
   try {
     const allEpisodesLinks = await Promise.all(
       episodes.map(async (episode) => {
-        const url = `https://api-anim.vercel.app/meta/mal/watch/${episode.id}`;
+        const url = `https://animetize-api.vercel.app/watch/${episode.id}`;
         console.log("Fetching URL:", url);
 
         const res = await fetch(url);

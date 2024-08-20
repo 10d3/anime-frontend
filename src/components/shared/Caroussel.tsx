@@ -26,7 +26,7 @@ export default function Carousel({
     if (!autoSlide) return;
     const slideInterval = setInterval(next, autoSlideInterval);
     return () => clearInterval(slideInterval);
-  }, []);
+  },);
 
   return (
     <div className="overflow-hidden relative w-full h-full items-center justify-center">
