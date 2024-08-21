@@ -44,7 +44,7 @@ export default function Hero() {
     <section>
       <Carousel autoSlide autoSlideInterval={3000}>
         {Array.isArray(animeData?.results) && animeData.results.length > 0 ? (
-          animeData.results.map((s: any) => (
+          animeData.results.slice(0, 8).map((s: any) => (
             <div key={s.id} className="relative min-w-full cursor-pointer">
               <Image
                 className="min-w-full object-cover object-center contain-content h-[250px] opacity-60"

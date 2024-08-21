@@ -10,6 +10,7 @@ interface searchParams {
   //   eventtype?: string | undefined;
   //   location?: string | undefined;
   page?: string;
+  title?: boolean;
 }
 
 export default async function AnimeLoad({
@@ -63,17 +64,19 @@ export default async function AnimeLoad({
 
   return (
     <section className="mb-8 w-full">
-      <div className=" mb-4 flex items-center justify-center">
-        <h1 className="text-4xl">Anime</h1>
-      </div>
+      {filterValues.title && (
+        <div className=" mb-4 flex items-center justify-center">
+          <h1 className="text-4xl">Anime</h1>
+        </div>
+      )}
       {/* <EventFilterSidebar /> */}
       <div className="flex w-full flex-col mt-6 justify-center items-center gap-6">
-        <div className="flex flex-col items-center justify-between md:flex-row md:flex-wrap gap-4">
+        <div className="w-[90%] grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-5 lg:gap-6">
           {data?.results.map((s: any) => (
             <AnimeCard
               key={s.id}
               title={s.title}
-            //   duration={s.duration}
+              //   duration={s.duration}
               episode={s.totalEpisodes}
               id={s.id}
               type={s.type}

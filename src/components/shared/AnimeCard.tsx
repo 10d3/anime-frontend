@@ -10,6 +10,7 @@ import { Badge } from "../ui/badge";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import { AspectRatio } from "../ui/aspect-ratio";
 
 interface AnimeCardProps {
   title: string;
@@ -30,45 +31,25 @@ export default function AnimeCard({
   mailId,
 }: AnimeCardProps) {
   return (
-    <Card className="w-[300px] h-auto">
-      <CardHeader>
-        <div className="w-[250px] m-auto">
-          <Image
-            className=" w-96 h-[250px] max-h-[260px] object-cover object-center rounded-md"
-            priority
-            width={1000}
-            height={1000}
-            src={image}
-            alt={`image of ${title}`}
-          />
-        </div>
-      </CardHeader>
-      <CardContent>
-        <CardTitle>{title}</CardTitle>
-        {/* <CardDescription className=' line-clamp-1'>
-            {description}
-        </CardDescription> */}
-        <div className=" mt-1 mb-1 flex flex-col gap-2">
-          <div className="flex justify-between">
-            <h2 className="line-clamp-1 text-[0.8rem] ">{episode}</h2>
-            {type && (
-              <Badge className=" bg-destructive">
-                <h2>{type}</h2>
-              </Badge>
-            )}
-          </div>
-          <div>
-            {duration && <h2>{duration}</h2>}
-            <Link href={`/anime/${id}`}>
-              <Button>Watch</Button>
-            </Link>
-          </div>
-        </div>
-      </CardContent>
-      {/* <CardFooter className='flex justify-between'>
-        <Button>Buy Now</Button>
-        <Link href={`/event/${slug}`}>Read More</Link>
-    </CardFooter> */}
-    </Card>
+    <Link href={`/anime/${id}`}>
+      <Card className="overflow-hidden transition-all hover:shadow-lg">
+        <CardHeader className="p-0">
+          <AspectRatio ratio={3 / 4}>
+            <Image
+              width={1000}
+              height={1000}
+              src={image}
+              alt={title}
+              className="object-cover w-full h-full transition-all hover:scale-105"
+            />
+          </AspectRatio>
+        </CardHeader>
+        <CardContent className="p-2 sm:p-4">
+          <h2 className="text-[0.8rem] md:text-sm sm:text-base font-bold tracking-tight truncate">
+            {title}
+          </h2>
+        </CardContent>
+      </Card>
+    </Link>
   );
 }
