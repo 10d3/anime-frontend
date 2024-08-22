@@ -33,9 +33,9 @@ export async function generateMetadata({ params }: paramsProp) {
     title: formatAnimeTitle(data.title),
     openGraph: {
       title: data.title,
-      description: 'The React Framework for the Web',
+      description: `Wacth freely ${data.title}`,
       url: `${process.env.VERCEL_URL}`,
-      siteName: 'Next.js',
+      siteName: 'Animestart.vercel.app',
       images: [
         {
           url: data.image, // Dynamic og route
