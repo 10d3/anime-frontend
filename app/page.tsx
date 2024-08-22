@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "AnimeStart",
   description: "An Platform where you can watch you favorite anime freely",
   openGraph: {
-    title: "Animestart",
+    title: "Anime Start",
     description: "An Platform where you can watch you favorite anime freely",
     tags: [
       "anime",
@@ -28,12 +28,12 @@ export const metadata: Metadata = {
     ],
     images: [
       {
-        url: '/public/metadata.png', // Dynamic og route
+        url: `${process.env.vercel_url}/metadata.png`, // Dynamic og route
         width: 800,
         height: 600,
       },
       {
-        url: '/public/metadata.png', // Dynamic og route
+        url: `${process.env.vercel_url}/metadata.png`, // Dynamic og route
         width: 1800,
         height: 1600,
         alt: `image of Animestart`,
