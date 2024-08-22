@@ -4,13 +4,17 @@ import AnimeCard from "./AnimeCard";
 import Link from "next/link";
 import { Pagination } from "../ui/pagination";
 import { useQuery } from "@tanstack/react-query";
+import { url } from "inspector";
+import { permanentRedirect, redirect } from "next/navigation";
+import { Button } from "../ui/button";
 
 interface searchParams {
   q: string | undefined;
   //   eventtype?: string | undefined;
   //   location?: string | undefined;
-  page?: string;
+  page?: any;
   title?: boolean;
+  genre?: string;
 }
 
 export default async function AnimeLoad({
@@ -18,8 +22,10 @@ export default async function AnimeLoad({
 }: {
   filterValues: searchParams;
 }) {
-  const { q, page } = filterValues;
+  const { q, page} = filterValues;
+  console.log(page)
   const pageN = page ? parseInt(page) : 1;
+  console.log(pageN)
   const eventPerPage = 4;
   const skip = (pageN - 1) * eventPerPage;
   const searchString = q
@@ -27,28 +33,44 @@ export default async function AnimeLoad({
     .filter((word) => word.length > 0)
     .join(" & ");
 
+  let url:string;
+  if (filterValues.genre) {
+    url = `https://api-anim.vercel.app/anime/gogoanime/genre/${filterValues.genre}`;
+  } else {
+    url = `https://api-anim.vercel.app/anime/gogoanime/${q}`;
+  }
   const fetchRecentAnime = async () => {
-    const url = `https://animetize-api.vercel.app/${q}`;
+    // const url = url;
     const res = await fetch(url);
     return res.json();
   };
 
   const data = await fetchRecentAnime();
-  //   const totalEventPrommise = prisma.event.count({ where });
+  console.log(data)
 
-  //   const eventsPromise = prisma.event.findMany({
-  //     where,
-  //     orderBy: {
-  //       startDate: "desc",
-  //     },
-  //     take: eventPerPage,
-  //     skip,
-  //   });
+  async function nextPage(formData: FormData) {
+    "use server";
 
-  //   const [events, totalEvent] = await Promise.all([
-  //     eventsPromise,
-  //     totalEventPrommise,
-  //   ]);
+    const genreId = formData.get("next") as string;
+    // Encode the query parameter directly
+    const query = genreId ? encodeURIComponent(genreId.trim()) : "";
+    const url = `/anime?q=${query}`;
+
+    // Perform the redirect
+    redirect(url);
+  }
+
+  async function navigatePage(formData: FormData) {
+    "use server";
+
+    const direction = formData.get("direction") as string;
+    const nextPageNumber = direction === "next" ? pageN + 1 : pageN - 1;
+
+    const nextUrl = q ? `/anime?q=${q}?page=${nextPageNumber}` : `/anime?genre=${filterValues.genre}?page=${nextPageNumber}`
+
+
+    redirect(nextUrl);
+  }
 
   if (data?.results.length === 0) {
     return (
@@ -63,7 +85,7 @@ export default async function AnimeLoad({
   }
 
   return (
-    <section className="mb-8 w-full">
+    <section className=" w-full">
       {filterValues.title && (
         <div className=" mb-4 flex items-center justify-center">
           <h1 className="text-4xl">Anime</h1>
@@ -85,15 +107,30 @@ export default async function AnimeLoad({
             />
           ))}
         </div>
-        {/* {
-                    title !== "Top Events" &&
-                    events.length > 0 &&
-                    <Pagination
-                        currentPage={pageN}
-                        totalPage={Math.ceil(totalEvent / eventPerPage)}
-                        filterValues={filterValues}
-                    />
-                } */}
+          <div>
+            <form action={navigatePage} className="flex gap-4 mt-4">
+              {Number(data.currentPage) > 1 && (
+                <Button
+                  type="submit"
+                  name="direction"
+                  value="previous"
+                  className="bg-primary"
+                >
+                  Previous
+                </Button>
+              )}
+              {data.hasNextPage && (
+                <Button
+                  type="submit"
+                  name="direction"
+                  value="next"
+                  className="bg-primary"
+                >
+                  Next
+                </Button>
+              )}
+            </form>
+          </div>
       </div>
     </section>
   );

@@ -71,7 +71,7 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
                       </div>
                     </div>
                     <div className="p-4 min-h-10">
-                      <div className="text-sm text-muted-foreground">{`Episode ${i + 1}`}</div>
+                      <div className="text-sm text-muted-foreground">{`Episode ${links.number}`}</div>
                       {/* <div className="font-medium">{links.title}</div> */}
                     </div>
                     <div className="p-4">

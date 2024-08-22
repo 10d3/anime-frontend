@@ -36,13 +36,15 @@ interface EpisodeLinks {
 
 export default function AnimeStarter({ params, searchParams }: paramsProp) {
   const [episode, setEpisode] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 8;
 
   //   const searchParams = useSearchParams();
   // const episodes = Number(searchParams.ep)
   const test = params.id.toLocaleLowerCase();
 
   const fetchRecentAnime = async () => {
-    const url = `https://animetize-api.vercel.app/info/${params.id}`;
+    const url = `https://api-anim.vercel.app/anime/gogoanime/info/${params.id}`;
     const res = await fetch(url);
     return res.json();
   };
@@ -62,16 +64,37 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
   const episodes = data?.episodes;
   console.log(episodes);
   // console.log(episodeCount);
+  // const {
+  //   data: link,
+  //   isLoading: loader,
+  //   error: failed,
+  // } = useFetchAllEpisodesLinks({ episodes });
   const {
     data: link,
     isLoading: loader,
     error: failed,
-  } = useFetchAllEpisodesLinks({ episodes });
-  console.log(loader)
-  console.log(failed)
-  console.log(link)
+  } = useFetchAllEpisodesLinks({
+    episodes,
+    page: currentPage,
+    limit: itemsPerPage,
+  });
 
-  if (!data)
+  const handleNextPage = () => {
+    if ((currentPage + 1) * itemsPerPage < episodes.length) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+  console.log(loader);
+  console.log(failed);
+  console.log(link);
+
+  if (isLoading)
     return (
       <section className="bg-muted rounded-lg overflow-hidden shadow-lg w-full">
         <Skeleton className="min-w-full h-20" />
@@ -91,6 +114,19 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
             image={data.image}
             description={data.description ? data.description : null}
           />
+          <div className="flex justify-between mt-4">
+            <Button onClick={handlePrevPage} disabled={currentPage === 0}>
+              Previous
+            </Button>
+            <Button
+              onClick={handleNextPage}
+              disabled={
+                !episodes || (currentPage + 1) * itemsPerPage >= episodes.length
+              }
+            >
+              Next
+            </Button>
+          </div>
           <div className="flex flex-col">
             {isLoading && (
               <section className="flex flex-col min-w-full gap-2 pt-2">

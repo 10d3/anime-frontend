@@ -28,11 +28,22 @@ interface EpisodeData {
   download: string;
 }
 
-const fetchAllEpisodesLinks = async ({ episodes }: FetchEpisodesProp) => {
+const fetchAllEpisodesLinks = async ({
+  episodes,
+  page,
+  limit,
+}: FetchEpisodesProp & { page: number; limit: number }) => {
   try {
+    // Calculer les index de début et de fin pour la pagination
+    const startIndex = page * limit;
+    const endIndex = startIndex + limit;
+
+    // Extraire les épisodes correspondant à la page actuelle
+    const episodesToFetch = episodes.slice(startIndex, endIndex);
+
     const allEpisodesLinks = await Promise.all(
-      episodes.map(async (episode) => {
-        const url = `https://animetize-api.vercel.app/watch/${episode.id}`;
+      episodesToFetch.map(async (episode) => {
+        const url = `https://api-anim.vercel.app/anime/gogoanime/watch/${episode.id}`;
         console.log("Fetching URL:", url);
 
         const res = await fetch(url);
@@ -41,7 +52,7 @@ const fetchAllEpisodesLinks = async ({ episodes }: FetchEpisodesProp) => {
         }
 
         const episodeData = await res.json();
-        console.log("Fetched Data:", episodeData); // Log the fetched data
+        console.log("Fetched Data:", episodeData);
 
         return {
           ...episode,
@@ -52,7 +63,7 @@ const fetchAllEpisodesLinks = async ({ episodes }: FetchEpisodesProp) => {
       })
     );
 
-    console.log("All Episodes Links:", allEpisodesLinks); // Log the final data
+    console.log("All Episodes Links:", allEpisodesLinks);
     return allEpisodesLinks;
   } catch (error) {
     console.error("Error in fetchAllEpisodesLinks:", error);
@@ -60,12 +71,15 @@ const fetchAllEpisodesLinks = async ({ episodes }: FetchEpisodesProp) => {
   }
 };
 
-
-const useFetchAllEpisodesLinks = ({ episodes }: FetchEpisodesProp) => {
+const useFetchAllEpisodesLinks = ({
+  episodes,
+  page,
+  limit,
+}: FetchEpisodesProp & { page: number; limit: number }) => {
   return useQuery({
-    queryKey: ["episode-links", episodes],
-    queryFn: () => fetchAllEpisodesLinks({ episodes }),
-    enabled: !!episodes, // Ensure the query only runs when episodes are available
+    queryKey: ["episode-links", episodes, page],
+    queryFn: () => fetchAllEpisodesLinks({ episodes, page, limit }),
+    enabled: !!episodes, // Assurez-vous que la requête ne s'exécute que lorsque des épisodes sont disponibles
   });
 };
 
