@@ -26,6 +26,19 @@ export const metadata: Metadata = {
       "nouveaux anime",
       "anime populaires",
     ],
+    images: [
+      {
+        url: '/public/metadata.png', // Dynamic og route
+        width: 800,
+        height: 600,
+      },
+      {
+        url: '/public/metadata.png', // Dynamic og route
+        width: 1800,
+        height: 1600,
+        alt: `image of Animestart`,
+      },
+    ]
   },
 };
 
