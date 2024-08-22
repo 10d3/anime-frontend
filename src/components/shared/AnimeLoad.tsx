@@ -46,7 +46,6 @@ export default async function AnimeLoad({
   };
 
   const data = await fetchRecentAnime();
-  console.log(data)
 
   async function nextPage(formData: FormData) {
     "use server";
