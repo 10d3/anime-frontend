@@ -13,25 +13,45 @@ interface paramsProp {
 }
 
 function formatAnimeTitle(title:string) {
-  // Supprimer les parties non désirées (ici, "tv-534")
   const cleanedTitle = title.replace(/-tv-\d+$/, "");
-
-  // Remplacer les tirets par des espaces
   const words = cleanedTitle.split("-");
-
-  // Mettre en majuscule la première lettre de chaque mot
   const capitalizedWords = words.map(
     (word) => word.charAt(0).toUpperCase() + word.slice(1)
   );
-
-  // Joindre les mots avec des espaces
   const formattedTitle = capitalizedWords.join(" ");
-
   return formattedTitle;
 }
+
 export async function generateMetadata({ params }: paramsProp) {
+  const fetchRecentAnime = async () => {
+    const url = `https://api-anim.vercel.app/anime/gogoanime/info/${params.id}`;
+    const res = await fetch(url);
+    return res.json();
+  };
+  const data = await fetchRecentAnime()
   return {
-    title: formatAnimeTitle(params.id),
+    title: formatAnimeTitle(data.title),
+    openGraph: {
+      title: data.title,
+      description: 'The React Framework for the Web',
+      url: `${process.env.VERCEL_URL}`,
+      siteName: 'Next.js',
+      images: [
+        {
+          url: data.image, // Dynamic og route
+          width: 800,
+          height: 600,
+        },
+        {
+          url: data.image, // Dynamic og route
+          width: 1800,
+          height: 1600,
+          alt: `image of ${data.title}`,
+        },
+      ],
+      locale: 'en_US',
+      type: 'website',
+    },
   };
 }
 

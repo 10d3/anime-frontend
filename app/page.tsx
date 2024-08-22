@@ -2,7 +2,15 @@ import AnimeLoad from "@/components/shared/AnimeLoad";
 import { AnimeSearchBar } from "@/components/shared/AnimeSearchBar";
 import Hero from "@/components/shared/Hero";
 import { Button } from "@/components/ui/button";
+import { Metadata } from "next";
 import Image from "next/image";
+
+
+export const metadata: Metadata = {
+  title: 'AnimeStart',
+  description: 'An Platform where you can watch you favorite anime freely',
+}
+
 
 export default function Home() {
   return (

@@ -17,6 +17,7 @@ interface searchParams {
   genre?: string;
 }
 
+
 export default async function AnimeLoad({
   filterValues,
 }: {

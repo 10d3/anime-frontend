@@ -39,8 +39,6 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 8;
 
-  //   const searchParams = useSearchParams();
-  // const episodes = Number(searchParams.ep)
   const test = params.id.toLocaleLowerCase();
 
   const fetchRecentAnime = async () => {
@@ -57,18 +55,10 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
     },
   });
 
-  console.log(data);
-
   const id = data?.episodes;
   const type = data?.type;
   const episodes = data?.episodes;
-  console.log(episodes);
-  // console.log(episodeCount);
-  // const {
-  //   data: link,
-  //   isLoading: loader,
-  //   error: failed,
-  // } = useFetchAllEpisodesLinks({ episodes });
+
   const {
     data: link,
     isLoading: loader,
