@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { Skeleton } from "../ui/skeleton";
+import Expandable from "../animata/carousel/expandable";
 
 export default function Hero() {
   const [animeData, setAnimeData] = useState<any>(null);
@@ -41,8 +42,8 @@ export default function Hero() {
   }
 
   return (
-    <section>
-      <Carousel autoSlide autoSlideInterval={3000}>
+    <section className="w-dvw">
+      {/* <Carousel autoSlide autoSlideInterval={3000}>
         {Array.isArray(animeData?.results) && animeData.results.length > 0 ? (
           animeData.results.slice(0, 8).map((s: any) => (
             <div key={s.id} className="relative min-w-full cursor-pointer">
@@ -64,7 +65,8 @@ export default function Hero() {
         ) : (
           <div>No slides available</div>
         )}
-      </Carousel>
+      </Carousel> */}
+      <Expandable list={data.results.slice(0, 9)} className="w-full min-w-full storybook-fix" />
     </section>
   );
 }

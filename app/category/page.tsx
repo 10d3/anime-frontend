@@ -26,9 +26,9 @@ export default async function page() {
   }
 
   return (
-    <section className="flex min-h-[80vdh] flex-col items-center justify-between pt-4">
+    <section className="flex min-h-[80vdh] flex-col items-center justify-between pt-4 px-4">
       <form action={handleGenreSelection}>
-        <div className="flex gap-4 flex-wrap">
+        <div className="flex gap-4 flex-wrap text-justify">
           {genre.map((category: any, i: number) => (
             <Button
               key={i}

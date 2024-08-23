@@ -103,8 +103,13 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
             title={data.title}
             image={data.image}
             description={data.description ? data.description : null}
+            genre={data.genres}
+            releasedDate={data.releaseDate}
+            status={data.status}
+            type={data.type}
+            subOrDub={data.subOrDub}
           />
-          <div className="flex justify-between mt-4">
+          <div className="flex justify-between mt-4 px-4">
             <Button onClick={handlePrevPage} disabled={currentPage === 0}>
               Previous
             </Button>

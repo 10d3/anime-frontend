@@ -1,20 +1,36 @@
-'use client'
+"use client";
 import { StarIcon } from "lucide-react";
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 import Image from "next/image";
+import { Badge } from "../ui/badge";
 
 interface AnimePresProp {
   title: string;
   image: string;
   description?: string;
+  genre: string[];
+  releasedDate: string;
+  status: string;
+  type: string;
+  subOrDub: string;
 }
-export const AnimePres = ({ title, image, description }: AnimePresProp) => {
-    const [isExpanded, setIsExpanded] = useState(false);
+export const AnimePres = ({
+  title,
+  image,
+  description,
+  genre,
+  releasedDate,
+  status,
+  type,
+  subOrDub,
+}: AnimePresProp) => {
+  const [isExpanded, setIsExpanded] = useState(false);
 
-    const toggleReadMore = () => {
-      setIsExpanded(!isExpanded);
-    };
+  const toggleReadMore = () => {
+    setIsExpanded(!isExpanded);
+  };
+  const arr = [`${status}`, `${type}`, `${subOrDub}`];
   return (
     <div>
       <section className="w-full py-12 md:py-24 lg:py-32">
@@ -27,7 +43,7 @@ export const AnimePres = ({ title, image, description }: AnimePresProp) => {
               height={1000}
               alt="Anime Cover"
               className="w-full h-auto rounded-lg shadow-lg"
-            //   style={{ aspectRatio: "150/225", objectFit: "cover" }}
+              //   style={{ aspectRatio: "150/225", objectFit: "cover" }}
             />
           </div>
           <div className="space-y-6">
@@ -42,6 +58,24 @@ export const AnimePres = ({ title, image, description }: AnimePresProp) => {
               </div>
               <div className="text-muted-foreground">9.1 (IMDB)</div>
             </div>
+            {releasedDate && (
+              <div className="flex flex-row gap-2">
+                {arr.map((a, i) => (
+                  <Badge key={i} className="py-1" variant="secondary">
+                    {a}
+                  </Badge>
+                ))}
+              </div>
+            )}
+            {genre && (
+              <div className="flex flex-row gap-1 flex-wrap">
+                {genre.map((g, i) => (
+                  <Badge className="w-auto py-1" key={i}>
+                    {g}
+                  </Badge>
+                ))}
+              </div>
+            )}
             {description && (
               <div className="text-justify">
                 <p
