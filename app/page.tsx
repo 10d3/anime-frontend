@@ -28,12 +28,12 @@ export const metadata: Metadata = {
     ],
     images: [
       {
-        url: `${process.env.vercel_url}/metadata.png`, // Dynamic og route
+        url: `https://i.postimg.cc/FKLVqrQC/metadata.png`, // Dynamic og route
         width: 800,
         height: 600,
       },
       {
-        url: `${process.env.vercel_url}/metadata.png`, // Dynamic og route
+        url: `https://i.postimg.cc/FKLVqrQC/metadata.png`, // Dynamic og route
         width: 1800,
         height: 1600,
         alt: `image of Animestart`,
