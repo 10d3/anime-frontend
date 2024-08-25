@@ -1,7 +1,6 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import VideoPlayer from './VideoPlayer';
-import 'video.js/dist/video-js.css';
 
 interface Source {
   url: string;
@@ -23,7 +22,7 @@ interface EpisodeLinks {
 
 export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
   const [selectedEpisode, setSelectedEpisode] = useState<EpisodeLinks | null>(null);
-  const [selectedQuality, setSelectedQuality] = useState('default');
+  const [selectedQuality, setSelectedQuality] = useState<string>('1080p'); // Valeur par défaut
   const [watchTimes, setWatchTimes] = useState<{ [id: string]: number }>({});
   const videoPlayerRef = useRef<any>(null);
 
@@ -38,7 +37,9 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
 
   const handleEpisodeClick = (episode: EpisodeLinks) => {
     setSelectedEpisode(episode);
-    setSelectedQuality(episode.videoSources[0].quality);
+    // Définir la qualité par défaut à 1080p ou à la première qualité disponible
+    const defaultQuality = episode.videoSources.find(source => source.quality === '1080p')?.quality || episode.videoSources[0].quality;
+    setSelectedQuality(defaultQuality);
   };
 
   const handleQualityChange = (quality: string) => {
@@ -59,17 +60,12 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
     }
   };
 
-  const handleTimeUpdate = () => {
-    if (videoPlayerRef.current) {
-      const player = videoPlayerRef.current;
-      const currentTime = player.currentTime();
-
-      if (selectedEpisode) {
-        setWatchTimes((prevTimes) => ({
-          ...prevTimes,
-          [selectedEpisode.id]: currentTime,
-        }));
-      }
+  const handleTimeUpdate = (currentTime: number) => {
+    if (selectedEpisode) {
+      setWatchTimes((prevTimes) => ({
+        ...prevTimes,
+        [selectedEpisode.id]: currentTime,
+      }));
     }
   };
 
@@ -95,9 +91,7 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
         ],
         controls: true,
         fluid: true,
-        plugins: {
-          // Vous pouvez ajouter des plugins ici
-        },
+        plugins: {}, // Pas de plugin supplémentaire
         controlBar: {
           children: [
             'playToggle', // Play/Pause button
@@ -114,22 +108,21 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
       }
     : {};
 
-    console.log(watchTimes)
   return (
     <section className="w-full py-12 md:py-24 lg:py-32">
-      <div className="container mx-auto px-4 md:px-6 grid gap-12">
-        <div>
-          <h2 className="text-3xl font-bold mb-6">Episodes</h2>
-
+      <div className="container mx-auto px-4 md:px-6 grid gap-4">
+        <div className='flex md:flex-row flex-col gap-2'>
+          <div className='flex flex-1'>
+          {/* <h2 className="text-3xl font-bold mb-6">Episodes</h2> */}
           {/* Le lecteur vidéo */}
           {selectedEpisode && (
-            <div className="relative w-full h-[56.25vw]">
+            <div className="relative w-full flex h-80 bg-black flex-1">
               <VideoPlayer
                 // ref={videoPlayerRef}
                 key={selectedEpisode.number}
                 options={videoJsOptions}
               />
-              <div className="absolute top-0 left-0 w-full p-4 bg-black bg-opacity-50">
+              <div className="absolute top-0 right-0 p-4 bg-black bg-opacity-50">
                 <label htmlFor="quality-select" className="block mb-2 text-sm font-medium text-white">
                   Quality:
                 </label>
@@ -148,9 +141,10 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
               </div>
             </div>
           )}
+          </div>
 
           {/* Liste des épisodes */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full md:w-1/3">
             {link.map((episode) => (
               <div
                 key={episode.number}
