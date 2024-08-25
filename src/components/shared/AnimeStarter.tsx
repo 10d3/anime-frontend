@@ -106,6 +106,7 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
             status={data.status}
             type={data.type}
             subOrDub={data.subOrDub}
+            totalEpisodes={data.totalEpisodes}
           />
           <div className="flex justify-between mt-4 px-4">
             <Button onClick={handlePrevPage} disabled={currentPage === 0}>

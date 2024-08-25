@@ -14,6 +14,7 @@ interface AnimePresProp {
   status: string;
   type: string;
   subOrDub: string;
+  totalEpisodes:number
 }
 export const AnimePres = ({
   title,
@@ -24,6 +25,7 @@ export const AnimePres = ({
   status,
   type,
   subOrDub,
+  totalEpisodes
 }: AnimePresProp) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -76,6 +78,7 @@ export const AnimePres = ({
                 ))}
               </div>
             )}
+            {totalEpisodes && (<Badge variant="outline" className="w-auto py-1">Total Episodes : {totalEpisodes}</Badge>)}
             {description && (
               <div className="text-justify">
                 <p
