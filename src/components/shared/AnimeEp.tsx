@@ -121,8 +121,7 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
         onTimeUpdate: handleTimeUpdate,
       }
     : {};
-    console.log(link)
-    const defaultSourceUrl = link[0].videoSources
+  const defaultSourceUrl = link[0].videoSources
     .map((value, index, array) => {
       const source = value as any;
       if (source.quality === "1080p") {

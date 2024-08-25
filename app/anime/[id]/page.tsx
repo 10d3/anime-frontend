@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: paramsProp) {
     title: formatAnimeTitle(data.title),
     openGraph: {
       title: data.title,
-      description: `Wacth freely ${data.title}`,
+      description: `${data.description}`,
       url: `${process.env.VERCEL_URL}/anime/${data.id}`,
       siteName: 'Animestart.vercel.app',
       images: [
