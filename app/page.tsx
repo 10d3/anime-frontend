@@ -38,7 +38,7 @@ export const metadata: Metadata = {
         height: 1600,
         alt: `image of Animestart`,
       },
-    ]
+    ],
   },
 };
 

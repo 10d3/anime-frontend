@@ -3,7 +3,6 @@
 import AnimeCard from "@/components/shared/AnimeCard";
 import { AnimeEp } from "@/components/shared/AnimeEp";
 import { AnimePres } from "@/components/shared/AnimePres";
-import VideoPlayer from "@/components/shared/VideoPlayer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -63,6 +62,7 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
     data: link,
     isLoading: loader,
     error: failed,
+    isFetching: Fetching,
   } = useFetchAllEpisodesLinks({
     episodes,
     page: currentPage,
@@ -80,20 +80,18 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
       setCurrentPage(currentPage - 1);
     }
   };
-  console.log(loader);
-  console.log(failed);
-  console.log(link);
 
-  if (isLoading)
+  if (isFetching) {
     return (
       <section className="bg-muted rounded-lg overflow-hidden shadow-lg w-full">
-        <Skeleton className="min-w-full h-20" />
+        <Skeleton className="min-w-full h-20 bg-secondary" />
         <div className="space-y-2">
-          <Skeleton className="h-[70px] w-full" />
-          <Skeleton className="h-[70px] w-full" />
+          <Skeleton className="h-[70px] w-full bg-secondary" />
+          <Skeleton className="h-[70px] w-full bg-secondary" />
         </div>
       </section>
     );
+  }
 
   return (
     <section className="flex min-h-dvh flex-col items-center justify-between">
@@ -123,16 +121,25 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
             </Button>
           </div>
           <div className="flex flex-col">
-            {isLoading && (
+            {isFetching && (
               <section className="flex flex-col min-w-full gap-2 pt-2">
-                <Skeleton className="min-w-full h-20" />
+                <Skeleton className="min-w-full h-20 bg-secondary" />
                 <div className="space-y-2">
-                  <Skeleton className="h-[70px] w-full" />
-                  <Skeleton className="h-[70px] w-full" />
+                  <Skeleton className="h-[70px] w-full bg-secondary" />
+                  <Skeleton className="h-[70px] w-full bg-secondary" />
                 </div>
               </section>
             )}
             {error && <div>Something went wrong</div>}
+            {Fetching && (
+              <section className="flex flex-col min-w-full gap-2 pt-2">
+                <Skeleton className="min-w-full h-20 bg-secondary" />
+                <div className="space-y-2">
+                  <Skeleton className="h-[70px] w-full bg-secondary" />
+                  <Skeleton className="h-[70px] w-full bg-secondary" />
+                </div>
+              </section>
+            )}
             {link?.length && (
               <div>
                 <AnimeEp link={link} />

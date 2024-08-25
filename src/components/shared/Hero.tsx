@@ -16,7 +16,7 @@ export default function Hero() {
     return res.json();
   };
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, isFetching } = useQuery({
     queryKey: ["recent-anime"],
     queryFn: async () => {
       const fetchedData = await fetchRecentAnime();
@@ -25,13 +25,13 @@ export default function Hero() {
     },
   });
 
-  if (isLoading) {
+  if (isFetching) {
     return (
-      <section className="flex flex-col min-w-full gap-2 pt-2">
-        <Skeleton className="min-w-full h-20" />
-        <div className="space-y-2">
-          <Skeleton className="h-[70px] w-full" />
-          <Skeleton className="h-[70px] w-full" />
+      <section className="flex flex-row min-w-full gap-2 pt-2">
+        <Skeleton className="w-2/3 h-96 bg-secondary" />
+        <div className="flex flex-1 flex-row space-x-2">
+          <Skeleton className="h-96 w-1/2 bg-secondary" />
+          <Skeleton className="h-96 w-1/2 bg-secondary" />
         </div>
       </section>
     );
@@ -42,7 +42,7 @@ export default function Hero() {
   }
 
   return (
-    <section className="w-dvw">
+    <section className="w-full">
       {/* <Carousel autoSlide autoSlideInterval={3000}>
         {Array.isArray(animeData?.results) && animeData.results.length > 0 ? (
           animeData.results.slice(0, 8).map((s: any) => (
@@ -66,7 +66,14 @@ export default function Hero() {
           <div>No slides available</div>
         )}
       </Carousel> */}
-      <Expandable list={data.results.slice(0, 9)} className="w-full min-w-full storybook-fix" />
+      <Expandable
+        list={data.results.slice(0, 9)}
+        className="w-full min-w-full storybook-fix md:hidden"
+      />
+      <Expandable
+        list={data.results.slice(0, 16)}
+        className="w-full min-w-full storybook-fix hidden md:flex"
+      />
     </section>
   );
 }

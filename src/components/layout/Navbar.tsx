@@ -1,3 +1,4 @@
+
 import React from "react";
 import Link from "next/link";
 import {
@@ -106,7 +107,7 @@ export default function Navbar() {
                   <PopoverTrigger>
                     <searchData.icon className="size-4" />
                   </PopoverTrigger>
-                  <PopoverContent>
+                  <PopoverContent className="mb-8">
                         <AnimeSearchBar />
                   </PopoverContent>
                 </Popover>

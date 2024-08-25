@@ -24,9 +24,7 @@ export default async function AnimeLoad({
   filterValues: searchParams;
 }) {
   const { q, page} = filterValues;
-  console.log(page)
   const pageN = page ? parseInt(page) : 1;
-  console.log(pageN)
   const eventPerPage = 4;
   const skip = (pageN - 1) * eventPerPage;
   const searchString = q

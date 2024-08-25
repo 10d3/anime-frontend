@@ -21,7 +21,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "flex flex-col gap-12 max-w-2xl mx-auto items-center",
+          "flex flex-col gap-12 max-w-4xl mx-auto items-center",
           inter.className
         )}
       >

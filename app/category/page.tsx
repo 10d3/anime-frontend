@@ -10,7 +10,6 @@ export default async function page() {
     return res.json();
   };
   const genre = await fetchRecentAnime();
-  console.log(genre);
 
   async function handleGenreSelection(formData: FormData) {
     "use server";
@@ -26,7 +25,7 @@ export default async function page() {
   }
 
   return (
-    <section className="flex min-h-[80vdh] flex-col items-center justify-between pt-4 px-4">
+    <section className="flex min-h-full flex-col items-center justify-center w-full pt-4 px-4">
       <form action={handleGenreSelection}>
         <div className="flex gap-4 flex-wrap text-justify">
           {genre.map((category: any, i: number) => (
