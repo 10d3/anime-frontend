@@ -41,6 +41,7 @@
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "video.js": "^8.17.3",
+    "videojs-http-source-selector": "^1.1.6",
     "zod": "^3.23.8"
   },
   "devDependencies": {
