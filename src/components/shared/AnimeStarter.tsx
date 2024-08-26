@@ -164,7 +164,7 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
                 const [start, end] = e.target.value.split("-").map(Number);
                 handleRangeSelect(start, end);
               }}
-              className="p-2 border rounded"
+              className="p-2 border rounded bg-primary"
             >
               {Array(Math.ceil(episodes.length / itemsPerPage)).fill(null).map((_, i) => {
                 const start = i * itemsPerPage + 1;
@@ -180,7 +180,7 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
               type="number"
               placeholder="Episode number"
               onChange={handleCustomEpisodeInput}
-              className="ml-4 p-2 border rounded"
+              className="ml-4 p-2 border rounded bg-primary"
             />
           </div>
           <div className="flex flex-col">

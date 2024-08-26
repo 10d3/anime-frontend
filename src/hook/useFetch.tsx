@@ -52,7 +52,6 @@ const fetchAllEpisodesLinks = async ({
         }
 
         const episodeData = await res.json();
-        console.log("Fetched Data:", episodeData);
 
         return {
           ...episode,
@@ -62,8 +61,6 @@ const fetchAllEpisodesLinks = async ({
         };
       })
     );
-
-    console.log("All Episodes Links:", allEpisodesLinks);
     return allEpisodesLinks;
   } catch (error) {
     console.error("Error in fetchAllEpisodesLinks:", error);
