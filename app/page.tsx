@@ -8,6 +8,21 @@ import Image from "next/image";
 export const metadata: Metadata = {
   title: "AnimeStart",
   description: "An Platform where you can watch you favorite anime freely",
+  keywords: [
+    "anime",
+    "streaming anime",
+    "anime en ligne",
+    "séries animées",
+    "épisodes d'anime",
+    "anime japonais",
+    "manga",
+    "anime gratuit",
+    "regarder anime",
+    "anime en HD",
+    "meilleurs anime",
+    "nouveaux anime",
+    "anime populaires",
+  ],
   openGraph: {
     title: "Anime Start",
     description: "An Platform where you can watch you favorite anime freely",

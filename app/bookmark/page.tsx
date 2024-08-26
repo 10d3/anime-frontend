@@ -1,9 +1,17 @@
 "use client";
 import AnimeCard from "@/components/shared/AnimeCard";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export default function page() {
-  const animeList = JSON.parse(localStorage.getItem("bookedAnime") || "{}");
+  const [animeList, setAnimeList] = useState([]);
+
+  useEffect(() => {
+    const storedBookmarks = localStorage.getItem('bookedAnime');
+    if (storedBookmarks) {
+      setAnimeList(JSON.parse(storedBookmarks));
+    }
+  }, []);
+  // const animeList = JSON.parse(localStorage.getItem("bookedAnime") || "{}");
 
   console.log(animeList);
   return (
