@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "@vidstack/react/player/styles/default/theme.css";
 import "@vidstack/react/player/styles/default/layouts/video.css";
-import { MediaPlayer, MediaProvider } from "@vidstack/react";
+import { MediaPlayer, MediaProvider, MediaPlayerInstance } from "@vidstack/react";
 import {
   defaultLayoutIcons,
   DefaultVideoLayout,
@@ -27,18 +27,14 @@ interface EpisodeLinks {
 }
 
 export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
-  const [selectedEpisode, setSelectedEpisode] = useState<EpisodeLinks | null>(
-    null
-  );
+  const [selectedEpisode, setSelectedEpisode] = useState<EpisodeLinks | null>(null);
   const [selectedQuality, setSelectedQuality] = useState<string>("1080p");
   const [watchTimes, setWatchTimes] = useState<{ [id: string]: number }>({});
-  const videoPlayerRef = useRef<any | null>(null);
+  const videoPlayerRef = useRef<MediaPlayerInstance | null>(null);
 
   // Charger les temps de visionnage depuis localStorage
   useEffect(() => {
-    const savedWatchTimes = JSON.parse(
-      localStorage.getItem("watchTimes") || "{}"
-    );
+    const savedWatchTimes = JSON.parse(localStorage.getItem("watchTimes") || "{}");
     setWatchTimes(savedWatchTimes);
   }, []);
 
@@ -51,12 +47,13 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
 
   const handleEpisodeClick = (episode: EpisodeLinks) => {
     setSelectedEpisode(episode);
-    const defaultQuality =
-      (Array.isArray(episode.videoSources) &&
-        episode.videoSources.find((source) => source.quality === "1080p")
-          ?.quality) ||
-      episode.videoSources[0].quality;
-    setSelectedQuality(defaultQuality);
+    const defaultQuality = 
+      episode.videoSources && Array.isArray(episode.videoSources) 
+        ? episode.videoSources.find((source) => source.quality === "1080p")?.quality 
+        : "1080p";
+
+    // Utiliser une valeur par défaut pour éviter undefined
+    setSelectedQuality(defaultQuality ?? "1080p");
 
     // Appliquer le temps sauvegardé lorsque l'épisode est sélectionné
     const savedTime = watchTimes[episode.id] || 0;
@@ -64,17 +61,6 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
       videoPlayerRef.current.currentTime = savedTime;
     }
   };
-
-  // const handleQualityChange = (quality: string) => {
-  //   setSelectedQuality(quality);
-  //   if (videoPlayerRef.current && selectedEpisode) {
-  //     const selectedSource = selectedEpisode.videoSources.find((source) => source.quality === quality);
-  //     if (selectedSource) {
-  //       videoPlayerRef.current.src = selectedSource.url;
-  //       videoPlayerRef.current.play();
-  //     }
-  //   }
-  // };
 
   const handleTimeUpdate = () => {
     if (videoPlayerRef.current && selectedEpisode) {
@@ -98,11 +84,9 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
   };
 
   const selectedSource =
-    (Array.isArray(selectedEpisode?.videoSources) &&
-      selectedEpisode?.videoSources.find(
-        (source) => source.quality === selectedQuality
-      )) ||
-    selectedEpisode?.videoSources[0];
+    selectedEpisode?.videoSources && Array.isArray(selectedEpisode.videoSources)
+      ? selectedEpisode.videoSources.find((source) => source.quality === selectedQuality)
+      : null;
 
   return (
     <section className="w-full py-12 md:py-24 lg:py-32">
