@@ -49,23 +49,6 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
     }
   }, [watchTimes]);
 
-  // Initialiser le premier épisode non présent dans watchTimes
-  // useEffect(() => {
-  //   if (link.length > 0 && !selectedEpisode) {
-  //     const firstUnwatchedEpisode = link.find(episode => !watchTimes[episode.id]);
-  //     if (firstUnwatchedEpisode) {
-  //       setSelectedEpisode(firstUnwatchedEpisode);
-  //       const defaultQuality = firstUnwatchedEpisode.videoSources.find((source) => source.quality === "1080p")?.quality ?? "1080p";
-  //       setSelectedQuality(defaultQuality);
-  //     } else {
-  //       const firstEpisode = link[0];
-  //       setSelectedEpisode(firstEpisode);
-  //       const defaultQuality = firstEpisode.videoSources.find((source) => source.quality === "1080p")?.quality ?? "1080p";
-  //       setSelectedQuality(defaultQuality);
-  //     }
-  //   }
-  // }, [link, selectedEpisode, watchTimes]);
-
   const handleEpisodeClick = (episode: EpisodeLinks) => {
     setSelectedEpisode(episode);
     const defaultQuality =
@@ -105,10 +88,11 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
-  const selectedSource =
-    selectedEpisode?.videoSources && Array.isArray(selectedEpisode.videoSources)
-      ? selectedEpisode.videoSources.find((source) => source.quality === selectedQuality)
-      : null;
+  // Conditional assignment of selectedSource
+  let selectedSource: Source | null = null;
+  if (selectedEpisode && selectedEpisode.videoSources) {
+    selectedSource = selectedEpisode.videoSources.find((source) => source.quality === selectedQuality) || null;
+  }
 
   return (
     <section className="w-full py-12 md:py-24 lg:py-32">
@@ -131,22 +115,6 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
                   <MediaProvider />
                   <DefaultVideoLayout icons={defaultLayoutIcons} />
                 </MediaPlayer>
-                <div className="mt-4">
-                  <span className="text-lg font-semibold">Select Quality:</span>
-                  <div className="mt-2">
-                    {selectedEpisode?.videoSources.map((source) => (
-                      <button
-                        key={source.quality}
-                        className={`px-4 py-2 m-1 rounded ${
-                          selectedQuality === source.quality ? 'bg-blue-500 text-white' : 'bg-gray-200'
-                        }`}
-                        onClick={() => handleQualityChange(source.quality)}
-                      >
-                        {source.quality}
-                      </button>
-                    ))}
-                  </div>
-                </div>
               </div>
             )}
           </div>
