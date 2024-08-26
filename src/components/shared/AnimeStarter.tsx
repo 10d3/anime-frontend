@@ -92,12 +92,12 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
       </section>
     );
   }
-
   return (
     <section className="flex min-h-dvh flex-col items-center justify-between">
       {data && (
         <div className="flex flex-col gap-4 w-full">
           <AnimePres
+            id={data.id}
             title={data.title}
             image={data.image}
             description={data.description ? data.description : null}

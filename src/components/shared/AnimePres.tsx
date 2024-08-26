@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import { Badge } from "../ui/badge";
+import { savedBookAnime } from "../../lib/utility";
 
 interface AnimePresProp {
   title: string;
@@ -14,9 +15,11 @@ interface AnimePresProp {
   status: string;
   type: string;
   subOrDub: string;
-  totalEpisodes:number
+  totalEpisodes: number;
+  id:string
 }
 export const AnimePres = ({
+  id,
   title,
   image,
   description,
@@ -25,14 +28,30 @@ export const AnimePres = ({
   status,
   type,
   subOrDub,
-  totalEpisodes
+  totalEpisodes,
 }: AnimePresProp) => {
+  const anime = {
+    id,
+    title,
+    image,
+    description,
+    genre,
+    releasedDate,
+    status,
+    type,
+    subOrDub,
+    totalEpisodes,
+  };
+  const onClickBook = () => {
+    savedBookAnime(anime);
+  };
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleReadMore = () => {
     setIsExpanded(!isExpanded);
   };
   const arr = [`${status}`, `${type}`, `${subOrDub}`];
+  const animeList = JSON.parse(localStorage.getItem("bookedAnime") || "{}");
   return (
     <div>
       <section className="w-full py-12 md:py-24 lg:py-32">
@@ -78,7 +97,11 @@ export const AnimePres = ({
                 ))}
               </div>
             )}
-            {totalEpisodes && (<Badge variant="outline" className="w-auto py-1">Total Episodes : {totalEpisodes}</Badge>)}
+            {totalEpisodes && (
+              <Badge variant="outline" className="w-auto py-1">
+                Total Episodes : {totalEpisodes}
+              </Badge>
+            )}
             {description && (
               <div className="text-justify">
                 <p
@@ -98,8 +121,14 @@ export const AnimePres = ({
             )}
             <div className="flex gap-4">
               <Button size="lg">Watch Trailer</Button>
-              <Button variant="outline" size="lg">
-                Add to Watchlist
+              <Button
+                disabled={animeList.find((anime: any) => anime.title === title)}
+                onClick={onClickBook}
+                variant="outline"
+                size="lg"
+              >
+                {animeList.find((anime: any) => anime.title === title) ? `Already in Bookmard` : `Add to
+                Watchlist`}
               </Button>
             </div>
           </div>

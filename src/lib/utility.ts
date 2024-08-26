@@ -8,3 +8,8 @@ export  function removeNumberFromString(inputString: string | undefined) {
     throw new TypeError("The input provided is not a valid string.");
   }
 }
+
+export const savedBookAnime = (anime:any) => {
+  localStorage.setItem("bookedAnime", JSON.stringify([anime]));
+};
+
