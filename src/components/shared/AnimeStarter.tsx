@@ -157,7 +157,7 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
               Next
             </Button>
           </div>
-          <div className="flex justify-center mt-4 px-4">
+          <div className="flex justify-center mt-2 px-4 flex-col md:flex-row gap-4">
             <select
               value={`${selectedRange[0]}-${selectedRange[1]}`}
               onChange={(e) => {
