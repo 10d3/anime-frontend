@@ -33,7 +33,7 @@ interface EpisodeLinks {
 export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
   const [selectedEpisode, setSelectedEpisode] = useState<EpisodeLinks | null>(null);
   const [selectedQuality, setSelectedQuality] = useState<string>("1080p");
-  const [watchTimes, setWatchTimes] = useState<{ [id: string]: number }>({});
+  const [watchTimes, setWatchTimes] = useState<{ [id: string]: { time: number; duration: number } }>({});
   const videoPlayerRef = useRef<MediaPlayerInstance | null>(null);
 
   // Charger les temps de visionnage depuis localStorage
@@ -58,7 +58,7 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
 
     setSelectedQuality(defaultQuality ?? "1080p");
 
-    const savedTime = watchTimes[episode.id] || 0;
+    const savedTime = watchTimes[episode.id]?.time || 0;
     if (videoPlayerRef.current) {
       videoPlayerRef.current.currentTime = savedTime;
     }
@@ -67,12 +67,13 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
   const handleTimeUpdate = () => {
     if (videoPlayerRef.current && selectedEpisode) {
       const currentTime = videoPlayerRef.current.currentTime;
-      const savedTime = watchTimes[selectedEpisode.id] || 0;
+      const duration = videoPlayerRef.current.duration;
+      const savedTime = watchTimes[selectedEpisode.id]?.time || 0;
 
       if (currentTime > savedTime) {
         setWatchTimes((prevTimes) => ({
           ...prevTimes,
-          [selectedEpisode.id]: currentTime,
+          [selectedEpisode.id]: { time: currentTime, duration },
         }));
       }
     }
@@ -82,17 +83,19 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
     setSelectedQuality(quality);
   };
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
-  };
-
   // Conditional assignment of selectedSource
   let selectedSource: Source | null = null;
   if (selectedEpisode && selectedEpisode.videoSources) {
     selectedSource = selectedEpisode.videoSources.find((source) => source.quality === selectedQuality) || null;
   }
+
+  const calculateProgress = (episodeId: string) => {
+    const episodeWatch = watchTimes[episodeId];
+    if (episodeWatch && episodeWatch.duration > 0) {
+      return (episodeWatch.time / episodeWatch.duration) * 100;
+    }
+    return 0;
+  };
 
   return (
     <section className="w-full py-12 md:py-24 lg:py-32">
@@ -107,7 +110,7 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
                   onTimeUpdate={handleTimeUpdate}
                   onLoadedData={() => {
                     if (videoPlayerRef.current && selectedEpisode) {
-                      const savedTime = watchTimes[selectedEpisode.id] || 0;
+                      const savedTime = watchTimes[selectedEpisode.id]?.time || 0;
                       videoPlayerRef.current.currentTime = savedTime;
                     }
                   }}
@@ -130,9 +133,12 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
                 >
                   <div className="p-4 min-h-10">
                     <div className="text-sm text-muted-foreground">{`Episode ${episode.number}`}</div>
-                    {watchTimes[episode.id] && (
-                      <div className="text-xs text-muted-foreground">
-                        Watched: {formatTime(watchTimes[episode.id])}
+                    {watchTimes[episode.id]?.duration > 0 && (
+                      <div className="relative h-1 bg-gray-300 rounded-full overflow-hidden mt-1">
+                        <div
+                          className="absolute top-0 left-0 h-full bg-blue-500"
+                          style={{ width: `${calculateProgress(episode.id)}%` }}
+                        ></div>
                       </div>
                     )}
                   </div>

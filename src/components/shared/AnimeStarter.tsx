@@ -34,9 +34,10 @@ interface EpisodeLinks {
 }
 
 export default function AnimeStarter({ params, searchParams }: paramsProp) {
-  const [episode, setEpisode] = useState(1);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [episode, setEpisode] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(0);
   const itemsPerPage = 8;
+  const [selectedRange, setSelectedRange] = useState<[number, number]>([1, itemsPerPage]);
 
   const test = params.id.toLocaleLowerCase();
 
@@ -69,16 +70,51 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
     limit: itemsPerPage,
   });
 
+  // Load last watched episode from watchTimes in localStorage
+  useEffect(() => {
+    const watchTimes = JSON.parse(localStorage.getItem("watchTimes") || "{}");
+    const lastWatchedEpisode = watchTimes[params.id]?.lastWatchedEpisode ?? 1;
+    if (lastWatchedEpisode) {
+      const lastPage = Math.floor((lastWatchedEpisode - 1) / itemsPerPage);
+      setCurrentPage(lastPage);
+      setSelectedRange([lastPage * itemsPerPage + 1, (lastPage + 1) * itemsPerPage]);
+    }
+  }, [params.id]);
+
   const handleNextPage = () => {
     if ((currentPage + 1) * itemsPerPage < episodes.length) {
-      setCurrentPage(currentPage + 1);
+      const nextPage = currentPage + 1;
+      setCurrentPage(nextPage);
+      setSelectedRange([nextPage * itemsPerPage + 1, (nextPage + 1) * itemsPerPage]);
     }
   };
 
   const handlePrevPage = () => {
     if (currentPage > 0) {
-      setCurrentPage(currentPage - 1);
+      const prevPage = currentPage - 1;
+      setCurrentPage(prevPage);
+      setSelectedRange([prevPage * itemsPerPage + 1, (prevPage + 1) * itemsPerPage]);
     }
+  };
+
+  const handleRangeSelect = (start: number, end: number) => {
+    setSelectedRange([start, end]);
+    setCurrentPage(Math.floor((start - 1) / itemsPerPage));
+  };
+
+  const handleCustomEpisodeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const episodeNumber = parseInt(e.target.value, 10);
+    if (episodeNumber && episodeNumber > 0 && episodeNumber <= episodes.length) {
+      const customPage = Math.floor((episodeNumber - 1) / itemsPerPage);
+      setCurrentPage(customPage);
+      setSelectedRange([customPage * itemsPerPage + 1, (customPage + 1) * itemsPerPage]);
+    }
+  };
+
+  const handleEpisodeWatched = (episodeNumber: number) => {
+    const watchTimes = JSON.parse(localStorage.getItem("watchTimes") || "{}");
+    watchTimes[params.id] = { lastWatchedEpisode: episodeNumber };
+    localStorage.setItem("watchTimes", JSON.stringify(watchTimes));
   };
 
   if (isFetching) {
@@ -120,6 +156,32 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
             >
               Next
             </Button>
+          </div>
+          <div className="flex justify-center mt-4 px-4">
+            <select
+              value={`${selectedRange[0]}-${selectedRange[1]}`}
+              onChange={(e) => {
+                const [start, end] = e.target.value.split("-").map(Number);
+                handleRangeSelect(start, end);
+              }}
+              className="p-2 border rounded"
+            >
+              {Array(Math.ceil(episodes.length / itemsPerPage)).fill(null).map((_, i) => {
+                const start = i * itemsPerPage + 1;
+                const end = Math.min((i + 1) * itemsPerPage, episodes.length);
+                return (
+                  <option key={i} value={`${start}-${end}`}>
+                    Episodes {start} - {end}
+                  </option>
+                );
+              })}
+            </select>
+            <input
+              type="number"
+              placeholder="Episode number"
+              onChange={handleCustomEpisodeInput}
+              className="ml-4 p-2 border rounded"
+            />
           </div>
           <div className="flex flex-col">
             {isFetching && (
