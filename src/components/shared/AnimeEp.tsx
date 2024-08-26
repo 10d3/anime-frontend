@@ -47,7 +47,7 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
 
   const handleEpisodeClick = (episode: EpisodeLinks) => {
     setSelectedEpisode(episode);
-    const defaultQuality = episode.videoSources.find((source) => source.quality === "1080p")?.quality || episode.videoSources[0].quality;
+    const defaultQuality = Array.isArray(episode.videoSources) && episode.videoSources.find((source) => source.quality === "1080p")?.quality || episode.videoSources[0].quality;
     setSelectedQuality(defaultQuality);
 
     // Appliquer le temps sauvegardé lorsque l'épisode est sélectionné
