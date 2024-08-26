@@ -35,7 +35,7 @@ export default function AnimeCard({
       <Card className="overflow-hidden transition-all hover:shadow-lg">
         <CardHeader className="p-0">
           <AspectRatio ratio={3 / 4}>
-            <Image
+            <img
               width={1000}
               height={1000}
               src={image}
