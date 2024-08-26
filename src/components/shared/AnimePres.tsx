@@ -2,7 +2,6 @@
 import { StarIcon } from "lucide-react";
 import React, { useState } from "react";
 import { Button } from "../ui/button";
-import Image from "next/image";
 import { Badge } from "../ui/badge";
 import { savedBookAnime } from "../../lib/utility";
 
@@ -16,8 +15,9 @@ interface AnimePresProp {
   type: string;
   subOrDub: string;
   totalEpisodes: number;
-  id:string
+  id: string;
 }
+
 export const AnimePres = ({
   id,
   title,
@@ -42,16 +42,23 @@ export const AnimePres = ({
     subOrDub,
     totalEpisodes,
   };
+
   const onClickBook = () => {
     savedBookAnime(anime);
   };
-  const [isExpanded, setIsExpanded] = useState(false);
 
+  const [isExpanded, setIsExpanded] = useState(false);
   const toggleReadMore = () => {
     setIsExpanded(!isExpanded);
   };
+
   const arr = [`${status}`, `${type}`, `${subOrDub}`];
-  const animeList = JSON.parse(localStorage.getItem("bookedAnime") || "{}");
+
+  // Assurez-vous que animeList est un tableau
+  const animeList = JSON.parse(localStorage.getItem("bookedAnime") || "[]");
+
+  const isInWatchlist = animeList.some((anime: any) => anime.title === title);
+
   return (
     <div>
       <section className="w-full py-12 md:py-24 lg:py-32">
@@ -63,7 +70,6 @@ export const AnimePres = ({
               height={1000}
               alt="Anime Cover"
               className="w-full h-auto rounded-lg shadow-lg"
-              //   style={{ aspectRatio: "150/225", objectFit: "cover" }}
             />
           </div>
           <div className="space-y-6">
@@ -98,7 +104,7 @@ export const AnimePres = ({
             )}
             {totalEpisodes && (
               <Badge variant="outline" className="w-auto py-1">
-                Total Episodes : {totalEpisodes}
+                Total Episodes: {totalEpisodes}
               </Badge>
             )}
             {description && (
@@ -121,13 +127,12 @@ export const AnimePres = ({
             <div className="flex gap-4">
               <Button size="lg">Watch Trailer</Button>
               <Button
-                disabled={animeList.find((anime: any) => anime.title === title)}
+                disabled={isInWatchlist}
                 onClick={onClickBook}
                 variant="outline"
                 size="lg"
               >
-                {animeList.find((anime: any) => anime.title === title) ? `Already in Bookmard` : `Add to
-                Watchlist`}
+                {isInWatchlist ? "Already in Bookmark" : "Add to Watchlist"}
               </Button>
             </div>
           </div>
