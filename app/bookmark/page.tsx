@@ -2,7 +2,7 @@
 import AnimeCard from "@/components/shared/AnimeCard";
 import React, { useEffect, useState } from "react";
 
-export default function page() {
+export default function Bookmark() {
   const [animeList, setAnimeList] = useState([]);
 
   useEffect(() => {
