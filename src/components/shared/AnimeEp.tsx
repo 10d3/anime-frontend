@@ -2,7 +2,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import "@vidstack/react/player/styles/default/theme.css";
 import "@vidstack/react/player/styles/default/layouts/video.css";
-import { MediaPlayer, MediaProvider, MediaPlayerInstance } from "@vidstack/react";
+import {
+  MediaPlayer,
+  MediaProvider,
+  MediaPlayerInstance,
+} from "@vidstack/react";
 import {
   defaultLayoutIcons,
   DefaultVideoLayout,
@@ -47,15 +51,13 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
 
   const handleEpisodeClick = (episode: EpisodeLinks) => {
     setSelectedEpisode(episode);
-    const defaultQuality = 
-      episode.videoSources && Array.isArray(episode.videoSources) 
-        ? episode.videoSources.find((source) => source.quality === "1080p")?.quality 
+    const defaultQuality =
+      episode.videoSources && Array.isArray(episode.videoSources)
+        ? episode.videoSources.find((source) => source.quality === "1080p")?.quality
         : "1080p";
 
-    // Utiliser une valeur par défaut pour éviter undefined
     setSelectedQuality(defaultQuality ?? "1080p");
 
-    // Appliquer le temps sauvegardé lorsque l'épisode est sélectionné
     const savedTime = watchTimes[episode.id] || 0;
     if (videoPlayerRef.current) {
       videoPlayerRef.current.currentTime = savedTime;
@@ -67,7 +69,6 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
       const currentTime = videoPlayerRef.current.currentTime;
       const savedTime = watchTimes[selectedEpisode.id] || 0;
 
-      // Mettre à jour le temps de visionnage uniquement si le temps actuel est supérieur au temps sauvegardé
       if (currentTime > savedTime) {
         setWatchTimes((prevTimes) => ({
           ...prevTimes,
@@ -113,11 +114,7 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
             )}
           </div>
 
-          <div
-            className={`flex flex-col gap-2 w-full ${
-              selectedEpisode ? `md:w-1/3` : `md:w-full`
-            }`}
-          >
+          <div className={`flex flex-col gap-2 w-full ${selectedEpisode ? `md:w-1/3` : `md:w-full`}`}>
             <h2 className="text-3xl font-bold mb-6">Episodes</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
               {link.map((episode) => (
