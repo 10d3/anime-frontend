@@ -36,19 +36,6 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
   const [watchTimes, setWatchTimes] = useState<{ [id: string]: number }>({});
   const videoPlayerRef = useRef<MediaPlayerInstance | null>(null);
 
-
-  useEffect(() => {
-    if (link.length > 0 && !selectedEpisode) {
-      const firstEpisode = link[0];
-      setSelectedEpisode(firstEpisode);
-      const defaultQuality = firstEpisode.videoSources.find((source) => source.quality === "1080p")?.quality ?? "1080p";
-      setSelectedQuality(defaultQuality);
-      const savedTime = watchTimes[firstEpisode.id] || 0;
-      if (videoPlayerRef.current) {
-        videoPlayerRef.current.currentTime = savedTime;
-      }
-    }
-  }, [link, selectedEpisode, watchTimes]);
   // Charger les temps de visionnage depuis localStorage
   useEffect(() => {
     const savedWatchTimes = JSON.parse(localStorage.getItem("watchTimes") || "{}");
@@ -61,6 +48,23 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
       localStorage.setItem("watchTimes", JSON.stringify(watchTimes));
     }
   }, [watchTimes]);
+
+  // Initialiser le premier épisode non présent dans watchTimes
+  // useEffect(() => {
+  //   if (link.length > 0 && !selectedEpisode) {
+  //     const firstUnwatchedEpisode = link.find(episode => !watchTimes[episode.id]);
+  //     if (firstUnwatchedEpisode) {
+  //       setSelectedEpisode(firstUnwatchedEpisode);
+  //       const defaultQuality = firstUnwatchedEpisode.videoSources.find((source) => source.quality === "1080p")?.quality ?? "1080p";
+  //       setSelectedQuality(defaultQuality);
+  //     } else {
+  //       const firstEpisode = link[0];
+  //       setSelectedEpisode(firstEpisode);
+  //       const defaultQuality = firstEpisode.videoSources.find((source) => source.quality === "1080p")?.quality ?? "1080p";
+  //       setSelectedQuality(defaultQuality);
+  //     }
+  //   }
+  // }, [link, selectedEpisode, watchTimes]);
 
   const handleEpisodeClick = (episode: EpisodeLinks) => {
     setSelectedEpisode(episode);
@@ -91,26 +95,28 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
     }
   };
 
+  const handleQualityChange = (quality: string) => {
+    setSelectedQuality(quality);
+  };
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
-  console.log(selectedEpisode)
   const selectedSource =
     selectedEpisode?.videoSources && Array.isArray(selectedEpisode.videoSources)
       ? selectedEpisode.videoSources.find((source) => source.quality === selectedQuality)
       : null;
 
-  console.log(selectedSource)
   return (
     <section className="w-full py-12 md:py-24 lg:py-32">
       <div className="container mx-auto px-4 md:px-6 grid gap-4">
         <div className="flex md:flex-row flex-col gap-2 items-center">
           <div className="flex flex-1">
             {selectedEpisode && (
-              <div className="max-w-4xl mx-auto flex">
+              <div className="max-w-4xl mx-auto flex flex-col">
                 <MediaPlayer
                   ref={videoPlayerRef}
                   src={selectedSource?.url || ""}
@@ -125,6 +131,22 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
                   <MediaProvider />
                   <DefaultVideoLayout icons={defaultLayoutIcons} />
                 </MediaPlayer>
+                <div className="mt-4">
+                  <span className="text-lg font-semibold">Select Quality:</span>
+                  <div className="mt-2">
+                    {selectedEpisode?.videoSources.map((source) => (
+                      <button
+                        key={source.quality}
+                        className={`px-4 py-2 m-1 rounded ${
+                          selectedQuality === source.quality ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                        }`}
+                        onClick={() => handleQualityChange(source.quality)}
+                      >
+                        {source.quality}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
           </div>
