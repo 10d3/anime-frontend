@@ -1,5 +1,5 @@
 "use client";
-import { StarIcon } from "lucide-react";
+import { Loader, StarIcon } from "lucide-react";
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
@@ -43,18 +43,25 @@ export const AnimePres = ({
     totalEpisodes,
   };
 
-  const onClickBook = () => {
-    savedBookAnime(anime);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onClickBook = async () => {
+    setIsLoading(true);
+    try {
+      await savedBookAnime(anime);
+    } catch (error) {
+      console.error("Error saving anime:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const [isExpanded, setIsExpanded] = useState(false);
   const toggleReadMore = () => {
     setIsExpanded(!isExpanded);
   };
 
   const arr = [`${status}`, `${type}`, `${subOrDub}`];
-
-  // Assurez-vous que animeList est un tableau
   const animeList = JSON.parse(localStorage.getItem("bookedAnime") || "[]");
 
   const isInWatchlist = animeList.some((anime: any) => anime.title === title);
@@ -127,14 +134,17 @@ export const AnimePres = ({
             <div className="flex gap-4">
               <Button size="lg">Watch Trailer</Button>
               <Button
-                disabled={isInWatchlist}
+                disabled={isInWatchlist || isLoading}
                 onClick={onClickBook}
                 variant="outline"
                 size="lg"
               >
-                {isInWatchlist ? "Already in Bookmark" : "Add to Watchlist"}
+                {isLoading ? "Adding..." : isInWatchlist ? "Already in Bookmark" : "Add to Watchlist"}
               </Button>
             </div>
+            {isLoading && (
+              <Loader size={16}/>
+            )}
           </div>
         </div>
       </section>
