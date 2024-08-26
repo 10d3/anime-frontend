@@ -57,16 +57,16 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
     }
   };
 
-  const handleQualityChange = (quality: string) => {
-    setSelectedQuality(quality);
-    if (videoPlayerRef.current && selectedEpisode) {
-      const selectedSource = selectedEpisode.videoSources.find((source) => source.quality === quality);
-      if (selectedSource) {
-        videoPlayerRef.current.src = selectedSource.url;
-        videoPlayerRef.current.play();
-      }
-    }
-  };
+  // const handleQualityChange = (quality: string) => {
+  //   setSelectedQuality(quality);
+  //   if (videoPlayerRef.current && selectedEpisode) {
+  //     const selectedSource = selectedEpisode.videoSources.find((source) => source.quality === quality);
+  //     if (selectedSource) {
+  //       videoPlayerRef.current.src = selectedSource.url;
+  //       videoPlayerRef.current.play();
+  //     }
+  //   }
+  // };
 
   const handleTimeUpdate = () => {
     if (videoPlayerRef.current && selectedEpisode) {
