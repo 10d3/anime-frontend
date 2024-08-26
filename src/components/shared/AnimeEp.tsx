@@ -36,6 +36,19 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
   const [watchTimes, setWatchTimes] = useState<{ [id: string]: number }>({});
   const videoPlayerRef = useRef<MediaPlayerInstance | null>(null);
 
+
+  useEffect(() => {
+    if (link.length > 0 && !selectedEpisode) {
+      const firstEpisode = link[0];
+      setSelectedEpisode(firstEpisode);
+      const defaultQuality = firstEpisode.videoSources.find((source) => source.quality === "1080p")?.quality ?? "1080p";
+      setSelectedQuality(defaultQuality);
+      const savedTime = watchTimes[firstEpisode.id] || 0;
+      if (videoPlayerRef.current) {
+        videoPlayerRef.current.currentTime = savedTime;
+      }
+    }
+  }, [link, selectedEpisode, watchTimes]);
   // Charger les temps de visionnage depuis localStorage
   useEffect(() => {
     const savedWatchTimes = JSON.parse(localStorage.getItem("watchTimes") || "{}");
@@ -84,11 +97,13 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
+  console.log(selectedEpisode)
   const selectedSource =
     selectedEpisode?.videoSources && Array.isArray(selectedEpisode.videoSources)
       ? selectedEpisode.videoSources.find((source) => source.quality === selectedQuality)
       : null;
 
+  console.log(selectedSource)
   return (
     <section className="w-full py-12 md:py-24 lg:py-32">
       <div className="container mx-auto px-4 md:px-6 grid gap-4">
