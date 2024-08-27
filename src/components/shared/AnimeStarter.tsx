@@ -70,31 +70,16 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
     limit: itemsPerPage,
   });
 
-  // Load last watched episode and selected range from localStorage
+  // Load last watched episode from watchTimes in localStorage
   useEffect(() => {
     const watchTimes = JSON.parse(localStorage.getItem("watchTimes") || "{}");
     const lastWatchedEpisode = watchTimes[params.id]?.lastWatchedEpisode ?? 1;
-    const storedRange = JSON.parse(localStorage.getItem("selectedRange") || "{}");
-    const storedPage = JSON.parse(localStorage.getItem("currentPage") || "0");
-
-    if (storedRange && storedRange[0] && storedRange[1]) {
-      setSelectedRange([storedRange[0], storedRange[1]]);
-    } else if (lastWatchedEpisode) {
+    if (lastWatchedEpisode) {
       const lastPage = Math.floor((lastWatchedEpisode - 1) / itemsPerPage);
       setCurrentPage(lastPage);
       setSelectedRange([lastPage * itemsPerPage + 1, (lastPage + 1) * itemsPerPage]);
     }
-
-    if (storedPage) {
-      setCurrentPage(storedPage);
-    }
   }, [params.id]);
-
-  // Save current range and page to localStorage on change
-  useEffect(() => {
-    localStorage.setItem("selectedRange", JSON.stringify(selectedRange));
-    localStorage.setItem("currentPage", JSON.stringify(currentPage));
-  }, [selectedRange, currentPage]);
 
   const handleNextPage = () => {
     if ((currentPage + 1) * itemsPerPage < episodes.length) {
@@ -143,7 +128,6 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
       </section>
     );
   }
-
   return (
     <section className="flex min-h-dvh flex-col items-center justify-between">
       {data && (

@@ -44,7 +44,7 @@ const fetchAllEpisodesLinks = async ({
     const allEpisodesLinks = await Promise.all(
       episodesToFetch.map(async (episode) => {
         const url = `https://api-anim.vercel.app/anime/gogoanime/watch/${episode.id}`;
-        console.log("Fetching URL:", url);
+        // console.log("Fetching URL:", url);
 
         const res = await fetch(url);
         if (!res.ok) {
