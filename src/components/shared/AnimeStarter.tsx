@@ -48,7 +48,7 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
   };
 
   const { data, isLoading, error, isFetching } = useQuery({
-    queryKey: ["recent-anime"],
+    queryKey: ["anime-info", params.id],
     queryFn: async () => {
       const animeData = await fetchRecentAnime();
       return animeData;
@@ -70,16 +70,29 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
     limit: itemsPerPage,
   });
 
-  // Load last watched episode from watchTimes in localStorage
-  useEffect(() => {
-    const watchTimes = JSON.parse(localStorage.getItem("watchTimes") || "{}");
-    const lastWatchedEpisode = watchTimes[params.id]?.lastWatchedEpisode ?? 1;
-    if (lastWatchedEpisode) {
-      const lastPage = Math.floor((lastWatchedEpisode - 1) / itemsPerPage);
-      setCurrentPage(lastPage);
-      setSelectedRange([lastPage * itemsPerPage + 1, (lastPage + 1) * itemsPerPage]);
-    }
-  }, [params.id]);
+ // Load last watched episode from watchTimes in localStorage
+ useEffect(() => {
+  const watchTimes = JSON.parse(localStorage.getItem("watchTimes") || "{}");
+
+  // Extract episode numbers for the current anime id
+  const episodeKeys = Object.keys(watchTimes).filter((key) =>
+    key.startsWith(params.id)
+  );
+
+  // Extract episode numbers from keys
+  const episodeNumbers = episodeKeys.map((key) => {
+    const match = key.match(/episode-(\d+)/);
+    return match ? parseInt(match[1], 10) : 1;
+  }).filter(Boolean); // Remove null values
+
+  // Determine the highest watched episode
+  const maxEpisodeNumber = Math.max(...episodeNumbers, 1); // Default to 1 if no episodes found
+
+  // Calculate the page for the highest watched episode
+  const lastPage = Math.floor((maxEpisodeNumber - 1) / itemsPerPage);
+  setCurrentPage(lastPage);
+  setSelectedRange([lastPage * itemsPerPage + 1, (lastPage + 1) * itemsPerPage]);
+}, [params.id, itemsPerPage]);
 
   const handleNextPage = () => {
     if ((currentPage + 1) * itemsPerPage < episodes.length) {
