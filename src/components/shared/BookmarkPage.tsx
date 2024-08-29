@@ -12,6 +12,16 @@ export default function BookmarkPage() {
     }
   }, []);
 
+  if (animeList.length >= 0) {
+    return (
+      <div className="min-h-dvh w-full px-4 items-center pt-4 flex flex-col gap-4">
+        <h1 className="text-2xl">My Booked List of Anime</h1>
+        <div className="flex justify-center items-center">
+          <h3 className="text-sm">No anime yet in your Booked List</h3>
+        </div>
+      </div>
+    );
+  }
   return (
     <main className="flex min-h-auto flex-col items-center pb-24 pt-4 gap-4 px-4 md:px-0">
       <h1 className="text-2xl">My Booked List of Anime</h1>
