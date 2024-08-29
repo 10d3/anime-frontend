@@ -69,7 +69,7 @@ export const AnimePres = ({
 
   return (
     <div>
-      <section className="w-full py-12 md:py-24 lg:py-32">
+      <section className="w-full py-12 md:py-24 lg:py-32 relative">
         <div className="container w-full gap-8 items-center flex flex-col md:flex-row ">
           <div className="w-1/2 flex justify-center">
             <img
@@ -82,7 +82,7 @@ export const AnimePres = ({
           </div>
           <div className="w-full md:w-1/2">
             <div className="space-y-6 flex flex-col items-center justify-center">
-              <h1 className="text-4xl font-bold tracking-tight">{title}</h1>
+              <h1 className="text-2xl md:text-4xl font-bold tracking-tight text-justify">{title}</h1>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1 text-yellow-500">
                   <StarFilledIcon className="w-5 h-5" />
@@ -103,7 +103,7 @@ export const AnimePres = ({
                 </div>
               )}
               {genre && (
-                <div className="flex flex-row gap-1 flex-wrap">
+                <div className="flex flex-row gap-2 flex-wrap justify-center items-center">
                   {genre.map((g, i) => (
                     <Badge className="w-auto py-1" key={i}>
                       {g}

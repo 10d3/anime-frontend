@@ -70,7 +70,7 @@ const DATA = {
 
 export default function Navbar() {
   return (
-    <nav className=" fixed bottom-4 z-index flex h-auto w-full flex-col items-center justify-center overflow-hidden">
+    <nav className=" fixed bottom-4 z-50 flex h-auto w-full flex-col items-center justify-center overflow-hidden">
       <div className="fixed bottom-0 inset-x-0 h-16 w-full bg-background to-transparent backdrop-blur-lg [-webkit-mask-image:linear-gradient(to_top,black,transparent)] dark:bg-background"></div>
       <TooltipProvider>
         <Dock

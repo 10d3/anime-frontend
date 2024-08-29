@@ -20,6 +20,7 @@ interface AnimeCardProps {
   type: string;
   id: string;
   mailId?: string;
+  subOrDub?: string;
 }
 export default function AnimeCard({
   title,
@@ -29,10 +30,12 @@ export default function AnimeCard({
   type,
   id,
   mailId,
+  subOrDub,
 }: AnimeCardProps) {
   return (
     <Link href={`/anime/${id}`}>
-      <Card className="overflow-hidden transition-all hover:shadow-lg">
+      <Card className="overflow-hidden transition-all hover:shadow-lg relative">
+        {subOrDub && <div className="absolute z-10 w-6 h-6 top-1 right-6"><Badge>{subOrDub?.toLocaleUpperCase()}</Badge></div>}
         <CardHeader className="p-0">
           <AspectRatio ratio={3 / 4}>
             <img
@@ -45,6 +48,7 @@ export default function AnimeCard({
           </AspectRatio>
         </CardHeader>
         <CardContent className="p-2 sm:p-4">
+          {/* {subOrDub && <Badge>{subOrDub}</Badge>} */}
           <h2 className="text-[0.8rem] md:text-sm sm:text-base font-bold tracking-tight truncate">
             {title}
           </h2>
