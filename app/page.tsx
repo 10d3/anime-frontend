@@ -6,7 +6,7 @@ import { Metadata } from "next";
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "AnimeStart",
+  title: "Anime Start",
   description: "An Platform where you can watch you favorite anime freely",
   keywords: [
     "anime",
