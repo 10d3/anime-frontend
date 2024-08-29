@@ -68,9 +68,8 @@ export const AnimePres = ({
   const isInWatchlist = animeList.some((anime: any) => anime.title === title);
 
   return (
-    <div>
-      <section className="w-full py-12 md:py-24 lg:py-32 relative">
-        <div className="container w-full gap-8 items-center flex flex-col md:flex-row ">
+      <section className="w-full py-12 md:py-24 lg:py-32 relative px-4">
+        <div className=" w-full gap-8 items-center flex flex-col md:flex-row">
           <div className="w-1/2 flex justify-center">
             <img
               src={image}
@@ -153,6 +152,5 @@ export const AnimePres = ({
           </div>
         </div>
       </section>
-    </div>
   );
 };

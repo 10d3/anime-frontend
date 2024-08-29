@@ -144,7 +144,7 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
   return (
     <section className="flex min-h-dvh flex-col items-center justify-between">
       {data && (
-        <div className="flex flex-col gap-4 w-full">
+        <div className="flex flex-col w-full">
           <AnimePres
             id={data.id}
             title={data.title}
