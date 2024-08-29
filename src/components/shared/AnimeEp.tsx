@@ -6,6 +6,8 @@ import {
   MediaPlayer,
   MediaProvider,
   MediaPlayerInstance,
+  MediaAutoPlayEventDetail,
+  MediaAutoPlayEvent,
 } from "@vidstack/react";
 import {
   defaultLayoutIcons,
@@ -30,7 +32,7 @@ interface EpisodeLinks {
   downloadLink: string;
 }
 
-export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
+export const AnimeEp = ({ link, type }: { link: EpisodeLinks[], type:string }) => {
   const [selectedEpisode, setSelectedEpisode] = useState<EpisodeLinks | null>(null);
   const [selectedQuality, setSelectedQuality] = useState<string>("1080p");
   const [watchTimes, setWatchTimes] = useState<{ [id: string]: { time: number; duration: number } }>({});
@@ -97,6 +99,10 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
     return 0;
   };
 
+  function onAutoPlay({ muted }: MediaAutoPlayEventDetail, nativeEvent: MediaAutoPlayEvent) {
+    const requestEvent = nativeEvent.request;
+  }
+
   return (
     <section className="w-full py-12 md:py-24 lg:py-32">
       <div className="container mx-auto px-4 md:px-6 grid gap-4">
@@ -107,6 +113,8 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
                 <MediaPlayer
                   ref={videoPlayerRef}
                   src={selectedSource?.url || ""}
+                  autoPlay
+                  onAutoPlay={onAutoPlay}
                   onTimeUpdate={handleTimeUpdate}
                   onLoadedData={() => {
                     if (videoPlayerRef.current && selectedEpisode) {
@@ -123,8 +131,8 @@ export const AnimeEp = ({ link }: { link: EpisodeLinks[] }) => {
           </div>
 
           <div className={`flex flex-col gap-2 w-full ${selectedEpisode ? `md:w-1/3` : `md:w-full`}`}>
-            <h2 className="text-3xl font-bold mb-6">Episodes</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+            <h2 className="text-3xl font-bold mb-6">{type === 'MOVIE' ? 'Movie' : 'Episodes'}</h2>
+            <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-3 w-full">
               {link.map((episode) => (
                 <div
                   key={episode.number}

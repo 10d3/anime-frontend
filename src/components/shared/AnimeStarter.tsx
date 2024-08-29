@@ -191,9 +191,9 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
             </select>
             <input
               type="number"
-              placeholder="Episode number"
+              placeholder="Jump to episode number"
               onChange={handleCustomEpisodeInput}
-              className="ml-4 p-2 border rounded bg-primary"
+              className="w-full p-2 border rounded bg-primary"
             />
           </div>
           <div className="flex flex-col">
@@ -218,7 +218,7 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
             )}
             {link?.length && (
               <div>
-                <AnimeEp link={link} />
+                <AnimeEp link={link} type={data.type} />
               </div>
             )}
           </div>
