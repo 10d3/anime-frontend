@@ -36,7 +36,7 @@ interface EpisodeLinks {
 export default function AnimeStarter({ params, searchParams }: paramsProp) {
   const [episode, setEpisode] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(0);
-  const itemsPerPage = 8;
+  const itemsPerPage = 9;
   const [selectedRange, setSelectedRange] = useState<[number, number]>([1, itemsPerPage]);
 
   const test = params.id.toLocaleLowerCase();
