@@ -53,6 +53,7 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
       const animeData = await fetchRecentAnime();
       return animeData;
     },
+    staleTime: 1000 * 60 * 15,
   });
 
   const id = data?.episodes;
@@ -132,7 +133,7 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
 
   if (isFetching) {
     return (
-      <section className="bg-muted rounded-lg overflow-hidden shadow-lg w-full">
+      <section className="bg-muted rounded-lg overflow-hidden shadow-lg w-full px-4">
         <Skeleton className="min-w-full h-20 bg-secondary" />
         <div className="space-y-2">
           <Skeleton className="h-[70px] w-full bg-secondary" />
@@ -198,7 +199,7 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
           </div>
           <div className="flex flex-col">
             {isFetching && (
-              <section className="flex flex-col min-w-full gap-2 pt-2">
+              <section className="flex flex-col min-w-full gap-2 pt-2 px-4">
                 <Skeleton className="min-w-full h-20 bg-secondary" />
                 <div className="space-y-2">
                   <Skeleton className="h-[70px] w-full bg-secondary" />
@@ -208,7 +209,7 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
             )}
             {error && <div>Something went wrong</div>}
             {Fetching && (
-              <section className="flex flex-col min-w-full gap-2 pt-2">
+              <section className="flex flex-col min-w-full gap-2 pt-2 px-4">
                 <Skeleton className="min-w-full h-20 bg-secondary" />
                 <div className="space-y-2">
                   <Skeleton className="h-[70px] w-full bg-secondary" />

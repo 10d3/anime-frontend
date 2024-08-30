@@ -77,6 +77,7 @@ const useFetchAllEpisodesLinks = ({
     queryKey: ["episode-links", episodes, page],
     queryFn: () => fetchAllEpisodesLinks({ episodes, page, limit }),
     enabled: !!episodes, // Assurez-vous que la requête ne s'exécute que lorsque des épisodes sont disponibles
+    staleTime: 1000 * 60 * 15,
   });
 };
 
