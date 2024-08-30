@@ -8,6 +8,8 @@ import {
   MediaPlayerInstance,
   MediaAutoPlayEventDetail,
   MediaAutoPlayEvent,
+  useMediaStore,
+  MediaQualitiesChangeEvent,
 } from "@vidstack/react";
 import {
   defaultLayoutIcons,
@@ -37,6 +39,7 @@ export const AnimeEp = ({ link, type }: { link: EpisodeLinks[], type:string }) =
   const [selectedQuality, setSelectedQuality] = useState<string>("1080p");
   const [watchTimes, setWatchTimes] = useState<{ [id: string]: { time: number; duration: number } }>({});
   const videoPlayerRef = useRef<MediaPlayerInstance | null>(null);
+  const { qualities, quality, autoQuality, canSetQuality } = useMediaStore(videoPlayerRef);
 
   // Charger les temps de visionnage depuis localStorage
   useEffect(() => {
@@ -102,7 +105,9 @@ export const AnimeEp = ({ link, type }: { link: EpisodeLinks[], type:string }) =
   function onAutoPlay({ muted }: MediaAutoPlayEventDetail, nativeEvent: MediaAutoPlayEvent) {
     const requestEvent = nativeEvent.request;
   }
-
+// console.log(selectedEpisode?.videoSources)
+// function onQualitiesChange(quality: any[], nativeEvent: MediaQualitiesChangeEvent) {
+// }
   return (
     <section className="w-full py-12 md:py-24 lg:py-32">
       <div className="container mx-auto px-4 md:px-6 grid gap-4">
@@ -111,6 +116,31 @@ export const AnimeEp = ({ link, type }: { link: EpisodeLinks[], type:string }) =
             {selectedEpisode && (
               <div className="max-w-4xl mx-auto flex flex-col">
                 <MediaPlayer
+                keyShortcuts={{
+                  // Space-separated list.
+                  togglePaused: 'k Space',
+                  toggleMuted: 'm',
+                  toggleFullscreen: 'f',
+                  togglePictureInPicture: 'i',
+                  toggleCaptions: 'c',
+                  // Array.
+                  seekBackward: ['j', 'J', 'ArrowLeft'],
+                  seekForward: ['l', 'L', 'ArrowRight'],
+                  volumeUp: 'ArrowUp',
+                  volumeDown: 'ArrowDown',
+                  speedUp: '>',
+                  slowDown: '<',
+                  // Custom callback.
+                  fooBar: {
+                    keys: ['k', 'Space'],
+                    onKeyUp({ event, player, remote }) {
+                      // ...
+                    },
+                    onKeyDown({ event, player, remote }) {
+                      // ...
+                    },
+                  },
+                }}
                   ref={videoPlayerRef}
                   src={selectedSource?.url || ""}
                   autoPlay
