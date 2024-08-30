@@ -2,14 +2,14 @@ import React from "react";
 import {
   Card,
   CardContent,
-  CardDescription,
+  // CardDescription,
   CardHeader,
-  CardTitle,
+  // CardTitle,
 } from "../ui/card";
 import { Badge } from "../ui/badge";
-import Image from "next/image";
+// import Image from "next/image";
 import Link from "next/link";
-import { Button } from "../ui/button";
+// import { Button } from "../ui/button";
 import { AspectRatio } from "../ui/aspect-ratio";
 
 interface AnimeCardProps {
@@ -35,7 +35,7 @@ export default function AnimeCard({
   return (
     <Link href={`/anime/${id}`}>
       <Card className="overflow-hidden transition-all hover:shadow-lg relative">
-        {subOrDub && <div className="absolute z-10 w-6 h-6 top-1 right-6"><Badge>{subOrDub?.toLocaleUpperCase()}</Badge></div>}
+        {subOrDub && <div className="absolute z-10 w-2 h-2 top-1 right-10"><Badge className="text-[0.5rem]">{subOrDub?.toLocaleUpperCase()}</Badge></div>}
         <CardHeader className="p-0">
           <AspectRatio ratio={3 / 4}>
             <img

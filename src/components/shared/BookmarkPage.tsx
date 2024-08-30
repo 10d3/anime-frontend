@@ -36,6 +36,7 @@ export default function BookmarkPage() {
             type={s.type}
             image={s.image}
             mailId={s.episodes}
+            subOrDub={s.subOrDub}
           />
         ))}
       </div>

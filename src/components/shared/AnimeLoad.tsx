@@ -1,10 +1,10 @@
 import React from "react";
 import { Skeleton } from "../ui/skeleton";
 import AnimeCard from "./AnimeCard";
-import Link from "next/link";
-import { Pagination } from "../ui/pagination";
-import { useQuery } from "@tanstack/react-query";
-import { url } from "inspector";
+// import Link from "next/link";
+// import { Pagination } from "../ui/pagination";
+// import { useQuery } from "@tanstack/react-query";
+// import { url } from "inspector";
 import { permanentRedirect, redirect } from "next/navigation";
 import { Button } from "../ui/button";
 
