@@ -23,6 +23,7 @@ export default function Hero() {
       setAnimeData(fetchedData);
       return fetchedData;
     },
+    staleTime:1000 * 60 * 5,
   });
 
   if (isFetching) {
