@@ -91,7 +91,7 @@ export default async function AnimeLoad({
       )}
       {/* <EventFilterSidebar /> */}
       <div className="flex w-full flex-col mt-6 justify-center items-center gap-6">
-        <div className="w-[90%] grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-5 lg:gap-6">
+        <div className="w-[90%] grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-5 lg:gap-6">
           {data?.results.map((s: any) => (
             <AnimeCard
               key={s.id}

@@ -224,7 +224,7 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
                 type="number"
                 placeholder="Jump to episode number"
                 onChange={handleCustomEpisodeInput}
-                className="w-full p-2 border rounded bg-primary"
+                className="w-full p-2 border rounded bg-primary text-primary"
               />
             </div>
           )}

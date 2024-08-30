@@ -25,7 +25,7 @@ export default function BookmarkPage() {
   return (
     <main className="flex min-h-auto flex-col items-center pb-24 pt-4 gap-4 px-4 md:px-0">
       <h1 className="text-2xl">My Booked List of Anime</h1>
-      <div className="w-full grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-5 lg:gap-6">
+      <div className="w-full grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-5 lg:gap-6">
         {animeList?.map((s: any) => (
           <AnimeCard
             key={s.id}
