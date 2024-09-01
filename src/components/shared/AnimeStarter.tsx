@@ -1,15 +1,15 @@
 "use client";
 
-import AnimeCard from "@/components/shared/AnimeCard";
+// import AnimeCard from "@/components/shared/AnimeCard";
 import { AnimeEp } from "@/components/shared/AnimeEp";
 import { AnimePres } from "@/components/shared/AnimePres";
-import { Badge } from "@/components/ui/badge";
+// import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import useFetchAllEpisodesLinks from "@/hook/useFetch";
-import { removeNumberFromString } from "@/lib/utility";
+// import { removeNumberFromString } from "@/lib/utility";
 import { useQuery } from "@tanstack/react-query";
-import Image from "next/image";
+// import Image from "next/image";
 import React, { useState, useEffect } from "react";
 
 interface paramsProp {
@@ -152,13 +152,35 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
     localStorage.setItem("watchTimes", JSON.stringify(watchTimes));
   };
 
-  if (isFetching) {
+  if (isLoading) {
     return (
-      <section className="bg-muted rounded-lg overflow-hidden shadow-lg w-full px-4">
-        <Skeleton className="min-w-full h-20 bg-secondary" />
-        <div className="space-y-2">
-          <Skeleton className="h-[70px] w-full bg-secondary" />
-          <Skeleton className="h-[70px] w-full bg-secondary" />
+      <section className="w-full py-12 md:py-24 lg:py-32 relative px-4">
+        <div className="w-full gap-8 items-center flex flex-col md:flex-row">
+          <div className="w-1/2 flex justify-center">
+            <Skeleton className="w-full md:w-[80%] h-[253px] rounded-lg bg-primary" />
+          </div>
+          <div className="w-full md:w-1/2 space-y-6 flex flex-col items-center justify-center">
+            <Skeleton className="h-10 w-3/4 bg-primary rounded" />
+            <div className="flex items-center gap-4">
+              <Skeleton className="h-5 w-32 bg-primary rounded" />
+            </div>
+            <div className="flex flex-row gap-2">
+              <Skeleton className="h-6 w-20 bg-primary rounded" />
+              <Skeleton className="h-6 w-20 bg-primary rounded" />
+              <Skeleton className="h-6 w-20 bg-primary rounded" />
+            </div>
+            <div className="flex flex-row gap-2 flex-wrap justify-center items-center">
+              <Skeleton className="h-6 w-20 bg-primary rounded" />
+              <Skeleton className="h-6 w-20 bg-primary rounded" />
+              <Skeleton className="h-6 w-20 bg-primary rounded" />
+            </div>
+            <Skeleton className="h-8 w-32 bg-primary rounded" />
+            <Skeleton className="h-28 w-full bg-primary rounded" />
+            <div className="flex gap-4">
+              <Skeleton className="h-10 w-32 bg-primary rounded" />
+              <Skeleton className="h-10 w-32 bg-primary rounded" />
+            </div>
+          </div>
         </div>
       </section>
     );
@@ -240,13 +262,14 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
             )}
             {error && <div>Something went wrong</div>}
             {Fetching && (
-              <section className="flex flex-col min-w-full gap-2 pt-2 px-4">
-                <Skeleton className="min-w-full h-20 bg-secondary" />
-                <div className="space-y-2">
-                  <Skeleton className="h-[70px] w-full bg-secondary" />
-                  <Skeleton className="h-[70px] w-full bg-secondary" />
-                </div>
-              </section>
+              <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-3 w-full pt-2 px-4">
+                {[...Array(6)].map((_, index) => (
+                  <Skeleton
+                    key={index}
+                    className="h-6 w-full bg-primary rounded-lg"
+                  />
+                ))}
+              </div>
             )}
             {link?.length && (
               <div>
