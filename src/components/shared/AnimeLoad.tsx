@@ -1,76 +1,54 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import { Skeleton } from "../ui/skeleton";
 import AnimeCard from "./AnimeCard";
-// import Link from "next/link";
-// import { Pagination } from "../ui/pagination";
-// import { useQuery } from "@tanstack/react-query";
-// import { url } from "inspector";
-import { permanentRedirect, redirect } from "next/navigation";
 import { Button } from "../ui/button";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-interface searchParams {
-  q: string | undefined;
-  //   eventtype?: string | undefined;
-  //   location?: string | undefined;
-  page?: any;
+interface SearchParams {
+  q?: string;
+  page?: string;
   title?: boolean;
   genre?: string;
 }
 
+interface AnimeData {
+  id: string;
+  title: string;
+  totalEpisodes: number;
+  type: string;
+  image: string;
+  episodes: any; // Consider defining a more specific type
+  subOrDub: string;
+}
 
-export default async function AnimeLoad({
+export default function AnimeLoad({
   filterValues,
 }: {
-  filterValues: searchParams;
+  filterValues: SearchParams;
 }) {
-  const { q, page} = filterValues;
-  const pageN = page ? parseInt(page) : 1;
-  const eventPerPage = 4;
-  const skip = (pageN - 1) * eventPerPage;
-  const searchString = q
-    ?.split(" ")
-    .filter((word) => word.length > 0)
-    .join(" & ");
+  const queryClient = useQueryClient();
+  const [pageN, setPageN] = useState(1);
+  const { q, genre } = filterValues;
 
-  let url:string;
-  if (filterValues.genre) {
-    url = `https://api-anim.vercel.app/anime/gogoanime/genre/${filterValues.genre}`;
-  } else {
-    url = `https://api-anim.vercel.app/anime/gogoanime/${q}`;
-  }
-  const fetchRecentAnime = async () => {
-    // const url = url;
-    const res = await fetch(url);
-    return res.json();
+  const fetchAnimeData = async (page: number, params: SearchParams) => {
+    const baseUrl = "https://api-anim.vercel.app/anime/gogoanime";
+    const url = params.genre
+      ? `${baseUrl}/genre/${params.genre}?page=${page}`
+      : `${baseUrl}/${params.q}?page=${page}`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    return response.json();
   };
 
-  const data = await fetchRecentAnime();
+  const { data, error, isLoading, isError } = useQuery({
+    queryKey: ["animeData", pageN, filterValues],
+    queryFn: () => fetchAnimeData(pageN, filterValues),
+  });
 
-  async function nextPage(formData: FormData) {
-    "use server";
-
-    const genreId = formData.get("next") as string;
-    // Encode the query parameter directly
-    const query = genreId ? encodeURIComponent(genreId.trim()) : "";
-    const url = `/anime?q=${query}`;
-
-    // Perform the redirect
-    redirect(url);
-  }
-
-  async function navigatePage(formData: FormData) {
-    "use server";
-
-    const direction = formData.get("direction") as string;
-    const nextPageNumber = direction === "next" ? pageN + 1 : pageN - 1;
-
-    const nextUrl = q ? `/anime?q=${q}?page=${nextPageNumber}` : `/anime?genre=${filterValues.genre}?page=${nextPageNumber}`
-
-
-    redirect(nextUrl);
-  }
-
-  if (data?.results.length === 0) {
+  if (isLoading) {
     return (
       <div className="flex flex-col space-y-3 pb-6 items-center justify-center">
         <Skeleton className="h-[125px] w-[250px] rounded-xl" />
@@ -82,54 +60,62 @@ export default async function AnimeLoad({
     );
   }
 
+  if (isError) {
+    return (
+      <div>
+        Error: {error instanceof Error ? error.message : "An error occurred"}
+      </div>
+    );
+  }
+
   return (
-    <section className=" w-full">
+    <section className="w-full">
       {filterValues.title && (
-        <div className=" mb-4 flex items-center justify-center">
+        <div className="mb-4 flex items-center justify-center">
           <h1 className="text-4xl">Anime</h1>
         </div>
       )}
-      {/* <EventFilterSidebar /> */}
       <div className="flex w-full flex-col mt-6 justify-center items-center gap-6">
         <div className="w-[90%] grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-5 lg:gap-6">
-          {data?.results.map((s: any) => (
+          {data?.results.map((anime: AnimeData) => (
             <AnimeCard
-              key={s.id}
-              title={s.title}
-              //   duration={s.duration}
-              episode={s.totalEpisodes}
-              id={s.id}
-              type={s.type}
-              image={s.image}
-              mailId={s.episodes}
-              subOrDub={s.subOrDub}
+              key={anime.id}
+              title={anime.title}
+              episode={anime.totalEpisodes}
+              id={anime.id}
+              type={anime.type}
+              image={anime.image}
+              mailId={anime.episodes}
+              subOrDub={anime.subOrDub}
             />
           ))}
         </div>
-          <div>
-            <form action={navigatePage} className="flex gap-4 mt-4">
-              {Number(data.currentPage) > 1 && (
-                <Button
-                  type="submit"
-                  name="direction"
-                  value="previous"
-                  className="bg-primary"
-                >
-                  Previous
-                </Button>
-              )}
-              {data.hasNextPage && (
-                <Button
-                  type="submit"
-                  name="direction"
-                  value="next"
-                  className="bg-primary"
-                >
-                  Next
-                </Button>
-              )}
-            </form>
-          </div>
+        <div className="flex gap-4">
+          <Button
+            type="button"
+            onClick={() => {
+              if (pageN > 1) {
+                setPageN((prev) => prev - 1);
+                queryClient.invalidateQueries({ queryKey: ["animeData"] });
+              }
+            }}
+            className="bg-primary"
+            disabled={pageN <= 1}
+          >
+            Previous
+          </Button>
+          <Button
+            type="button"
+            // disabled={data?.results.hasNextPage === true ? false : true}
+            onClick={() => {
+              setPageN((prev) => prev + 1);
+              queryClient.invalidateQueries({ queryKey: ["animeData"] });
+            }}
+            className="bg-primary"
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </section>
   );
