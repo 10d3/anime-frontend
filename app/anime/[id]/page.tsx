@@ -57,7 +57,7 @@ export async function generateMetadata({ params }: paramsProp) {
 
 export default function Page({ params, searchParams }: paramsProp) {
   const test = params.id.toLocaleLowerCase();
-  console.log(params.id);
+  // console.log(params.id);
   return (
     <div>
       <AnimeStarter params={params} searchParams={searchParams} />

@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-export  function removeNumberFromString(inputString: string | undefined) {
-    console.log(inputString)
+export function removeNumberFromString(inputString: string | undefined) {
+  console.log(inputString);
   if (typeof inputString === "string") {
     return inputString.replace(/-\d+$/, "");
   } else {
@@ -11,7 +11,9 @@ export  function removeNumberFromString(inputString: string | undefined) {
 
 export const savedBookAnime = (anime: any) => {
   // Step 1: Retrieve the existing list from localStorage
-  const existingAnimeList = JSON.parse(localStorage.getItem("bookedAnime") || "[]");
+  const existingAnimeList = JSON.parse(
+    localStorage.getItem("bookedAnime") || "[]"
+  );
 
   // Step 2: Check if the existing data is an array; if not, initialize it as an array
   const animeList = Array.isArray(existingAnimeList) ? existingAnimeList : [];
@@ -29,3 +31,14 @@ export const savedBookAnime = (anime: any) => {
   localStorage.setItem("bookedAnime", JSON.stringify(animeList));
 };
 
+export const removeBookedAnime = (anime: any) => {
+  const existingAnimeList = JSON.parse(
+    localStorage.getItem("bookedAnime") || "[]"
+  );
+
+  const updatedAnimeList = existingAnimeList.filter(
+    (item: any) => item.id !== anime.id
+  )
+
+  localStorage.setItem("bookedAnime", JSON.stringify(updatedAnimeList));
+};

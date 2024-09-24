@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Skeleton } from "../ui/skeleton";
 import AnimeCard from "./AnimeCard";
 import { Button } from "../ui/button";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 interface SearchParams {
   q?: string;
@@ -27,7 +27,6 @@ export default function AnimeLoad({
 }: {
   filterValues: SearchParams;
 }) {
-  const queryClient = useQueryClient();
   const [pageN, setPageN] = useState(1);
   const { q, genre } = filterValues;
 
@@ -43,9 +42,10 @@ export default function AnimeLoad({
     return response.json();
   };
 
-  const { data, error, isLoading, isError } = useQuery({
+  const { data, error, isLoading, isError, refetch } = useQuery({
     queryKey: ["animeData", pageN, filterValues],
     queryFn: () => fetchAnimeData(pageN, filterValues),
+    placeholderData: keepPreviousData,
   });
 
   if (isLoading) {
@@ -96,7 +96,7 @@ export default function AnimeLoad({
             onClick={() => {
               if (pageN > 1) {
                 setPageN((prev) => prev - 1);
-                queryClient.invalidateQueries({ queryKey: ["animeData"] });
+                refetch();
               }
             }}
             className="bg-primary"
@@ -106,10 +106,10 @@ export default function AnimeLoad({
           </Button>
           <Button
             type="button"
-            // disabled={data?.results.hasNextPage === true ? false : true}
+            disabled={!data.hasNextPage}
             onClick={() => {
               setPageN((prev) => prev + 1);
-              queryClient.invalidateQueries({ queryKey: ["animeData"] });
+              refetch();
             }}
             className="bg-primary"
           >
