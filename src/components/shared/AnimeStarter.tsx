@@ -251,7 +251,7 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
             </div>
           )}
           <div className="flex flex-col">
-            {isFetching && (
+            {loader && (
               <section className="flex flex-col min-w-full gap-2 pt-2 px-4">
                 <Skeleton className="min-w-full h-20 bg-secondary" />
                 <div className="space-y-2">
