@@ -36,7 +36,7 @@ interface EpisodeLinks {
 
 export const AnimeEp = ({ link, type }: { link: EpisodeLinks[], type:string }) => {
   const [selectedEpisode, setSelectedEpisode] = useState<EpisodeLinks | null>(null);
-  const [selectedQuality, setSelectedQuality] = useState<string>("1080p");
+  const [selectedQuality, setSelectedQuality] = useState<string>("720p");
   const [watchTimes, setWatchTimes] = useState<{ [id: string]: { time: number; duration: number } }>({});
   const videoPlayerRef = useRef<MediaPlayerInstance | null>(null);
   const { qualities, quality, autoQuality, canSetQuality } = useMediaStore(videoPlayerRef);
