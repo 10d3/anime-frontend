@@ -6,10 +6,11 @@ import {
   MediaPlayer,
   MediaProvider,
   MediaPlayerInstance,
-  MediaAutoPlayEventDetail,
-  MediaAutoPlayEvent,
   useMediaStore,
-  MediaQualitiesChangeEvent,
+  type MediaErrorDetail,
+  type MediaCanPlayDetail,
+  type MediaErrorEvent,
+  type MediaCanPlayEvent,
 } from "@vidstack/react";
 import {
   defaultLayoutIcons,
@@ -34,64 +35,185 @@ interface EpisodeLinks {
   downloadLink: string;
 }
 
-export const AnimeEp = ({ link, type }: { link: EpisodeLinks[], type:string }) => {
-  const [selectedEpisode, setSelectedEpisode] = useState<EpisodeLinks | null>(null);
-  const [selectedQuality, setSelectedQuality] = useState<string>("720p");
-  const [watchTimes, setWatchTimes] = useState<{ [id: string]: { time: number; duration: number } }>({});
+export const AnimeEp = ({
+  link,
+  type,
+}: {
+  link: EpisodeLinks[];
+  type: string;
+}) => {
+  const [selectedEpisode, setSelectedEpisode] = useState<EpisodeLinks | null>(
+    null
+  );
+  const [selectedQuality, setSelectedQuality] = useState<string>("360p");
+  const [watchTimes, setWatchTimes] = useState<{
+    [id: string]: { time: number; duration: number };
+  }>({});
+  const [isBuffering, setIsBuffering] = useState(false);
+  const [networkError, setNetworkError] = useState<string | null>(null);
+  const [autoQualityEnabled, setAutoQualityEnabled] = useState(true);
   const videoPlayerRef = useRef<MediaPlayerInstance | null>(null);
-  const { qualities, quality, autoQuality, canSetQuality } = useMediaStore(videoPlayerRef);
+  const retryTimeoutRef = useRef<NodeJS.Timeout>();
+  const { qualities, quality, autoQuality, canSetQuality } =
+    useMediaStore(videoPlayerRef);
 
-  // Charger les temps de visionnage depuis localStorage
   useEffect(() => {
-    const savedWatchTimes = JSON.parse(localStorage.getItem("watchTimes") || "{}");
+    const savedWatchTimes = JSON.parse(
+      localStorage.getItem("watchTimes") || "{}"
+    );
     setWatchTimes(savedWatchTimes);
   }, []);
 
-  // Sauvegarder les temps de visionnage dans localStorage
   useEffect(() => {
     if (Object.keys(watchTimes).length > 0) {
       localStorage.setItem("watchTimes", JSON.stringify(watchTimes));
     }
   }, [watchTimes]);
 
-  const handleEpisodeClick = (episode: EpisodeLinks) => {
-    setSelectedEpisode(episode);
-    const defaultQuality =
-      episode.videoSources && Array.isArray(episode.videoSources)
-        ? episode.videoSources.find((source) => source.quality === "1080p")?.quality
-        : "1080p";
+  useEffect(() => {
+    return () => {
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
+      }
+    };
+  }, []);
 
-    setSelectedQuality(defaultQuality ?? "1080p");
+  useEffect(() => {
+    if (selectedEpisode) {
+      const currentIndex = link.findIndex((ep) => ep.id === selectedEpisode.id);
+      if (currentIndex < link.length - 1) {
+        const nextEpisode = link[currentIndex + 1];
+        const preloadLink = document.createElement("link");
+        preloadLink.rel = "preload";
+        preloadLink.as = "video";
+        preloadLink.href = nextEpisode.videoSources[0]?.url || "";
+        document.head.appendChild(preloadLink);
+      }
+    }
+  }, [selectedEpisode, link]);
+
+  const handleEpisodeClick = (episode: EpisodeLinks) => {
+    setNetworkError(null);
+    setSelectedEpisode(episode);
+
+    const lowestQuality =
+      episode.videoSources.sort(
+        (a, b) => parseInt(a.quality) - parseInt(b.quality)
+      )[0]?.quality || "360p";
+
+    setSelectedQuality(lowestQuality);
 
     const savedTime = watchTimes[episode.id]?.time || 0;
     if (videoPlayerRef.current) {
-      videoPlayerRef.current.currentTime = savedTime;
+      const mediaElement = videoPlayerRef.current.el?.querySelector("video");
+      if (mediaElement) {
+        mediaElement.currentTime = savedTime;
+      }
     }
   };
 
   const handleTimeUpdate = () => {
     if (videoPlayerRef.current && selectedEpisode) {
-      const currentTime = videoPlayerRef.current.currentTime;
-      const duration = videoPlayerRef.current.duration;
-      const savedTime = watchTimes[selectedEpisode.id]?.time || 0;
+      const mediaElement = videoPlayerRef.current.el?.querySelector("video");
+      if (mediaElement) {
+        const currentTime = mediaElement.currentTime;
+        const duration = mediaElement.duration;
+        const savedTime = watchTimes[selectedEpisode.id]?.time || 0;
 
-      if (currentTime > savedTime) {
-        setWatchTimes((prevTimes) => ({
-          ...prevTimes,
-          [selectedEpisode.id]: { time: currentTime, duration },
-        }));
+        if (currentTime > savedTime) {
+          setWatchTimes((prevTimes) => ({
+            ...prevTimes,
+            [selectedEpisode.id]: { time: currentTime, duration },
+          }));
+        }
       }
     }
   };
 
   const handleQualityChange = (quality: string) => {
     setSelectedQuality(quality);
+    if (videoPlayerRef.current) {
+      const mediaElement = videoPlayerRef.current.el?.querySelector("video");
+      if (mediaElement) {
+        const currentTime = mediaElement.currentTime;
+        mediaElement.currentTime = currentTime;
+      }
+    }
   };
 
-  // Conditional assignment of selectedSource
+  const handleError = (detail: MediaErrorDetail, event: MediaErrorEvent) => {
+    setNetworkError("Video playback error. Retrying...");
+
+    if (selectedEpisode && autoQualityEnabled) {
+      const qualities = selectedEpisode.videoSources
+        .map((source) => parseInt(source.quality))
+        .sort((a, b) => a - b);
+
+      const currentQuality = parseInt(selectedQuality);
+      const lowerQuality = qualities.find((q) => q < currentQuality);
+
+      if (lowerQuality) {
+        setSelectedQuality(`${lowerQuality}p`);
+      }
+    }
+
+    if (retryTimeoutRef.current) {
+      clearTimeout(retryTimeoutRef.current);
+    }
+
+    retryTimeoutRef.current = setTimeout(() => {
+      if (videoPlayerRef.current) {
+        videoPlayerRef.current.startLoading();
+      }
+    }, 3000);
+  };
+
+  const handleWaiting = () => {
+    setIsBuffering(true);
+  };
+
+  const handlePlaying = () => {
+    setIsBuffering(false);
+    setNetworkError(null);
+  };
+
+  const handleCanPlay = (
+    detail: MediaCanPlayDetail,
+    event: MediaCanPlayEvent
+  ) => {
+    setNetworkError(null);
+
+    if (autoQualityEnabled && videoPlayerRef.current) {
+      const mediaElement = videoPlayerRef.current.el?.querySelector("video");
+      if (mediaElement) {
+        const buffered = mediaElement.buffered;
+        const currentTime = mediaElement.currentTime;
+
+        const bufferHealth =
+          buffered.length > 0 ? buffered.end(0) - currentTime : 0;
+
+        if (bufferHealth < 5 && selectedEpisode) {
+          const qualities = selectedEpisode.videoSources
+            .map((source) => parseInt(source.quality))
+            .sort((a, b) => a - b);
+
+          const currentQuality = parseInt(selectedQuality);
+          const lowerQuality = qualities.find((q) => q < currentQuality);
+
+          if (lowerQuality) {
+            setSelectedQuality(`${lowerQuality}p`);
+          }
+        }
+      }
+    }
+  };
+
   let selectedSource: Source | null = null;
   if (selectedEpisode && selectedEpisode.videoSources) {
-    selectedSource = selectedEpisode.videoSources.find((source) => source.quality === selectedQuality) || null;
+    selectedSource =
+      selectedEpisode.videoSources.find(
+        (source) => source.quality === selectedQuality
+      ) || null;
   }
 
   const calculateProgress = (episodeId: string) => {
@@ -102,66 +224,89 @@ export const AnimeEp = ({ link, type }: { link: EpisodeLinks[], type:string }) =
     return 0;
   };
 
-  function onAutoPlay({ muted }: MediaAutoPlayEventDetail, nativeEvent: MediaAutoPlayEvent) {
-    const requestEvent = nativeEvent.request;
-  }
-// console.log(selectedEpisode?.videoSources)
-// function onQualitiesChange(quality: any[], nativeEvent: MediaQualitiesChangeEvent) {
-// }
   return (
     <section className="w-full py-12 md:py-24 lg:py-32">
       <div className="container mx-auto px-4 md:px-6 grid gap-4">
         <div className="flex md:flex-row flex-col gap-2 items-center">
-          <div className="flex flex-1">
+          <div className="flex flex-1 flex-col">
             {selectedEpisode && (
-              <div className="max-w-4xl mx-auto flex flex-col">
-                <MediaPlayer
-                keyShortcuts={{
-                  // Space-separated list.
-                  togglePaused: 'k Space',
-                  toggleMuted: 'm',
-                  toggleFullscreen: 'f',
-                  togglePictureInPicture: 'i',
-                  toggleCaptions: 'c',
-                  // Array.
-                  seekBackward: ['j', 'J', 'ArrowLeft'],
-                  seekForward: ['l', 'L', 'ArrowRight'],
-                  volumeUp: 'ArrowUp',
-                  volumeDown: 'ArrowDown',
-                  speedUp: '>',
-                  slowDown: '<',
-                  // Custom callback.
-                  fooBar: {
-                    keys: ['k', 'Space'],
-                    onKeyUp({ event, player, remote }) {
-                      // ...
-                    },
-                    onKeyDown({ event, player, remote }) {
-                      // ...
-                    },
-                  },
-                }}
-                  ref={videoPlayerRef}
-                  src={selectedSource?.url || ""}
-                  autoPlay
-                  onAutoPlay={onAutoPlay}
-                  onTimeUpdate={handleTimeUpdate}
-                  onLoadedData={() => {
-                    if (videoPlayerRef.current && selectedEpisode) {
-                      const savedTime = watchTimes[selectedEpisode.id]?.time || 0;
-                      videoPlayerRef.current.currentTime = savedTime;
-                    }
-                  }}
-                >
-                  <MediaProvider />
-                  <DefaultVideoLayout icons={defaultLayoutIcons} />
-                </MediaPlayer>
-              </div>
+              <>
+                <div className="max-w-4xl mx-auto flex flex-col">
+                  <MediaPlayer
+                    ref={videoPlayerRef}
+                    src={selectedSource?.url || ""}
+                    autoPlay
+                    onTimeUpdate={handleTimeUpdate}
+                    onError={handleError}
+                    onWaiting={handleWaiting}
+                    onPlaying={handlePlaying}
+                    onCanPlay={handleCanPlay}
+                    onLoadedData={() => {
+                      if (videoPlayerRef.current && selectedEpisode) {
+                        const savedTime =
+                          watchTimes[selectedEpisode.id]?.time || 0;
+                        videoPlayerRef.current.currentTime = savedTime;
+                      }
+                    }}
+                  >
+                    <MediaProvider />
+                    <DefaultVideoLayout icons={defaultLayoutIcons} />
+                  </MediaPlayer>
+                </div>
+
+                {/* Network status indicators */}
+                {isBuffering && (
+                  <div className="mt-2 text-yellow-500 text-center">
+                    Buffering... Please wait
+                  </div>
+                )}
+                {networkError && (
+                  <div className="mt-2 text-red-500 text-center">
+                    {networkError}
+                  </div>
+                )}
+
+                {/* Quality control */}
+                <div className="mt-4 flex items-center justify-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={autoQualityEnabled}
+                      onChange={(e) => setAutoQualityEnabled(e.target.checked)}
+                      id="autoQuality"
+                    />
+                    <label htmlFor="autoQuality">Auto Quality</label>
+                  </div>
+                  {!autoQualityEnabled && selectedEpisode.videoSources && (
+                    <select
+                      value={selectedQuality}
+                      onChange={(e) => handleQualityChange(e.target.value)}
+                      className="px-2 py-1 rounded border"
+                    >
+                      {selectedEpisode.videoSources
+                        .sort(
+                          (a, b) => parseInt(b.quality) - parseInt(a.quality)
+                        )
+                        .map((source) => (
+                          <option key={source.quality} value={source.quality}>
+                            {source.quality}
+                          </option>
+                        ))}
+                    </select>
+                  )}
+                </div>
+              </>
             )}
           </div>
 
-          <div className={`flex flex-col gap-2 w-full ${selectedEpisode ? `md:w-1/3` : `md:w-full`}`}>
-            <h2 className="text-3xl font-bold mb-6">{type === 'MOVIE' ? 'Movie' : 'Episodes'}</h2>
+          <div
+            className={`flex flex-col gap-2 w-full ${
+              selectedEpisode ? `md:w-1/3` : `md:w-full`
+            }`}
+          >
+            <h2 className="text-3xl font-bold mb-6">
+              {type === "MOVIE" ? "Movie" : "Episodes"}
+            </h2>
             <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-3 w-full">
               {link.map((episode) => (
                 <div
