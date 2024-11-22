@@ -45,7 +45,7 @@ export const AnimeEp = ({
   const [selectedEpisode, setSelectedEpisode] = useState<EpisodeLinks | null>(
     null
   );
-  const [selectedQuality, setSelectedQuality] = useState<string>("360p");
+  const [selectedQuality, setSelectedQuality] = useState<string>("1080p");
   const [watchTimes, setWatchTimes] = useState<{
     [id: string]: { time: number; duration: number };
   }>({});
@@ -99,7 +99,7 @@ export const AnimeEp = ({
     const lowestQuality =
       episode.videoSources.sort(
         (a, b) => parseInt(a.quality) - parseInt(b.quality)
-      )[0]?.quality || "360p";
+      )[3]?.quality || "360p";
 
     setSelectedQuality(lowestQuality);
 
@@ -143,6 +143,8 @@ export const AnimeEp = ({
 
   const handleError = (detail: MediaErrorDetail, event: MediaErrorEvent) => {
     setNetworkError("Video playback error. Retrying...");
+    console.error("MediaErrorDetail:", detail);
+    console.error("MediaErrorEvent:", event);
 
     if (selectedEpisode && autoQualityEnabled) {
       const qualities = selectedEpisode.videoSources

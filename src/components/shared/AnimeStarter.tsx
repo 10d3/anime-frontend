@@ -73,8 +73,7 @@ export default function AnimeStarter({ params, searchParams }: paramsProp) {
     page: currentPage,
     limit: itemsPerPage,
   });
-
-  // Load last watched episode from watchTimes in localStorage
+console.log(link)  // Load last watched episode from watchTimes in localStorage
   useEffect(() => {
     const watchTimes = JSON.parse(localStorage.getItem("watchTimes") || "{}");
 
